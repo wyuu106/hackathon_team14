@@ -19,7 +19,7 @@
 ## 1. リポジトリをclone
 
 ```bash
-git clone <repository-url>
+git clone "リポジトリURL（SSHの方がいいかも？）
 cd hackathon_team14
 ```
 
