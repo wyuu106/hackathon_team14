@@ -1,0 +1,40 @@
+{
+  "name": "hackathon-dev",
+
+  "dockerComposeFile": "../compose.yml",
+
+  "service": "app",
+
+  "workspaceFolder": "/workspace",
+
+  "shutdownAction": "stopCompose",
+
+  "remoteUser": "root",
+
+  "forwardPorts": [
+    8000,
+    5173
+  ],
+
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "python.defaultInterpreterPath": "/workspace/backend/.venv/bin/python",
+        "python.terminal.activateEnvironment": true,
+        "editor.formatOnSave": true
+      },
+      "extensions": [
+        "ms-python.python",
+        "ms-python.vscode-pylance",
+        "charliermarsh.ruff",
+        "esbenp.prettier-vscode",
+        "dbaeumer.vscode-eslint",
+        "ms-azuretools.vscode-docker"
+      ]
+    }
+  },
+
+  "postCreateCommand": "bash -lc 'cd /workspace/backend && uv sync && cd /workspace/frontend && npm install'",
+
+  "postStartCommand": "git config --global --add safe.directory /workspace"
+}

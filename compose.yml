@@ -1,0 +1,52 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: docker/dev/Dockerfile
+
+    working_dir: /workspace
+
+    command: sleep infinity
+
+    tty: true
+    stdin_open: true
+
+    volumes:
+      - .:/workspace
+      - node_modules:/workspace/frontend/node_modules
+
+    ports:
+      - "8000:8000"
+      - "5173:5173"
+
+    env_file:
+      - .env
+
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: postgres:16
+
+    environment:
+      POSTGRES_USER: app
+      POSTGRES_PASSWORD: app
+      POSTGRES_DB: app
+
+    ports:
+      - "5432:5432"
+
+    volumes:
+      - pg-data:/var/lib/postgresql/data
+
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U app -d app"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+
+volumes:
+  pg-data:
+  node_modules:
