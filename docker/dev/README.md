@@ -1,4 +1,4 @@
-# Hackathon Team14
+# Docker環境設定チュートリアル
 
 ## 開発環境
 
@@ -54,6 +54,7 @@ Dev Containers: Reopen in Container
 ## 3. 環境変数設定
 
 ルートディレクトリで以下を実行
+
 ```bash
 cp .env .env.example
 ```
@@ -61,6 +62,22 @@ cp .env .env.example
 ※ 本番DB設定は後で変更予定
 
 ---
+
+## 4. 初期設定
+
+必要なライブラリやパッケージをインストールするため、`backend` ディレクトリと `frontend` ディレクトリでそれぞれ以下のコマンドを実行してください。
+
+## Backend
+
+```bash
+uv sync
+```
+
+## Frontend
+
+```bash
+npm install
+```
 
 # 起動方法
 
