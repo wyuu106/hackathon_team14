@@ -6,13 +6,14 @@ import { API_URL } from "../../utils/api";
 import { getErrorMessage } from "../../utils/error";
 
 import "./auth.css";
-import "../../styles/button.css";
+import "../../styles/button.css"
 
-function Login() {
+function Register() {
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
     id: "",
+    username: "",
     password: "",
   });
 
@@ -23,17 +24,15 @@ function Login() {
     });
   };
 
-  const handleLogin = async () => {
+  const handleRegister = async () => {
     try {
-      const response = await axios.post(
-        `${API_URL}/login`,
+      await axios.post(
+        `${API_URL}/register`,
         formData
       );
 
-      console.log(response.data);
-
-      // ログイン成功後
-      navigate("/");
+      alert("登録が完了しました");
+      navigate("/login");
 
     } catch (error) {
       console.error(error);
@@ -46,7 +45,7 @@ function Login() {
       <div className="auth-container">
 
         <h2 className="auth-title">
-          ログイン
+          新規ユーザー登録
         </h2>
 
         <div className="auth-form">
@@ -60,6 +59,14 @@ function Login() {
           />
 
           <input
+            type="text"
+            name="username"
+            placeholder="ユーザーネーム"
+            value={formData.username}
+            onChange={handleChange}
+          />
+
+          <input
             type="password"
             name="password"
             placeholder="パスワード"
@@ -69,23 +76,22 @@ function Login() {
 
           <button
             className="button-base button-primary"
-            onClick={handleLogin}
+            onClick={handleRegister}
           >
-            ログイン
+            登録
           </button>
 
         </div>
 
         <Link
           className="auth-link"
-          to="/register"
+          to="/"
         >
-          新規ユーザー登録はこちら
+          ログイン画面へ戻る
         </Link>
-
       </div>
     </div>
   );
 }
 
-export default Login;
+export default Register;
