@@ -6,7 +6,6 @@ import { API_URL } from "../../utils/api";
 import { getErrorMessage } from "../../utils/error";
 
 import "./auth.css";
-import "../../styles/button.css";
 
 function Login() {
   const navigate = useNavigate();
@@ -49,7 +48,10 @@ function Login() {
           ログイン
         </h2>
 
-        <div className="auth-form">
+        <form
+          className="auth-form"
+          onSubmit={handleLogin}
+        >
 
           <input
             type="text"
@@ -68,13 +70,13 @@ function Login() {
           />
 
           <button
-            className="button-base button-primary"
-            onClick={handleLogin}
+            className="auth-button"
+            type="submit"
           >
             ログイン
           </button>
 
-        </div>
+        </form>
 
         <Link
           className="auth-link"

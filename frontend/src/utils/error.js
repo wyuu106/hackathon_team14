@@ -1,9 +1,7 @@
 export const getErrorMessage = (error) => {
-
   if (error.response) {
-
     return (
-      error.response.data.detail ||
+      error.response.data?.detail ??
       "サーバーエラー"
     );
   }
@@ -12,5 +10,5 @@ export const getErrorMessage = (error) => {
     return "サーバーに接続できません";
   }
 
-  return "エラーが発生しました";
+  return error.message || "エラーが発生しました";
 };

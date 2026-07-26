@@ -33,9 +33,24 @@
   border: 1px solid #ccc;
 }
 
+.auth-button {
+  font-size: 18px;
+  padding: 12px 24px;
+  border-radius: 8px;
+  cursor: pointer;
+  background: #007bff;
+  color: white;
+}
+
 .auth-link {
   text-align: center;
   color: #007bff;
   cursor: pointer;
   text-decoration: underline;
+}
+
+.auth-error {
+  color: #d32f2f;
+  font-size: 14px;
+  margin: 8px 0;
 }
