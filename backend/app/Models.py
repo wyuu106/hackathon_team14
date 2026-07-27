@@ -9,8 +9,9 @@ follows_table = Table(
     "follows",
     Base.metadata,
     Column("follower_id", Integer, ForeignKey("users.id"), primary_key=True),
-    Column("followed_id", Integer, ForeignKey("users.id"), primary_key=True)
+    Column("followed_id", Integer, ForeignKey("users.id"), primary_key=True),
 )
+
 
 class User(Base):
     __tablename__ = "users"
@@ -20,6 +21,7 @@ class User(Base):
     password_hash = Column(String, nullable=False)
 
     posts = relationship("Post", back_populates="author")
+
 
 class Post(Base):
     __tablename__ = "posts"

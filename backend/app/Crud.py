@@ -7,6 +7,8 @@ import Models, Schemas
 
 class EmailAlreadyExistsError(Exception):
     """メールアドレスが既に登録されている"""
+
+
 BCRYPT_MAX_BYTES = 72
 
 
@@ -40,7 +42,6 @@ def create_user(db: Session, user: Schemas.UserCreate) -> Models.User:
     try:
         db.commit()
     except IntegrityError as e:
-        
         db.rollback()
         raise EmailAlreadyExistsError(user.email) from e
     db.refresh(db_user)
@@ -54,9 +55,7 @@ def get_user(db: Session, user_id: int) -> Models.User | None:
 
 def get_user_by_email(db: Session, email: str) -> Models.User | None:
     """メールアドレスでユーザーを取得する"""
-    return db.scalars(
-        select(Models.User).where(Models.User.email == email)
-    ).first()
+    return db.scalars(select(Models.User).where(Models.User.email == email)).first()
 
 
 # --- 投稿関連 ---
