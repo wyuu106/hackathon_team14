@@ -10,14 +10,11 @@ DATABASE_URL = os.getenv("DATABASE_URL")
 engine = create_engine(DATABASE_URL)
 
 # セッション作成
-SessionLocal = sessionmaker(
-    autocommit=False,
-    autoflush=False,
-    bind=engine
-)
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 # モデルのベース
 Base = declarative_base()
+
 
 # FastAPIの依存注入用。yieldで返し、リクエスト終了時に必ずclose
 # 使い方：def endpoint(db: Session = Depends(get_db)):
