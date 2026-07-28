@@ -5,8 +5,8 @@ from sqlalchemy.orm import Session
 import Models, Schemas
 
 
-class EmailAlreadyExistsError(Exception):
-    """メールアドレスが既に登録されている"""
+class UsernameAlreadyExistsError(Exception):
+    """ユーザー名が既に登録されている"""
 
 
 BCRYPT_MAX_BYTES = 72
@@ -28,22 +28,23 @@ def verify_password(password: str, password_hash: str) -> bool:
 def create_user(db: Session, user: Schemas.UserCreate) -> Models.User:
     """ユーザーを新規登録する
 
-    メールアドレスが既に使われている場合はEmailAlreadyExistsErrorを送出する。
+    ユーザー名が既に使われている場合はUsernameAlreadyExistsErrorを送出する。
     """
-    if get_user_by_email(db, user.email) is not None:
-        raise EmailAlreadyExistsError(user.email)
+    if get_user_by_username(db, user.username) is not None:
+        raise UsernameAlreadyExistsError(user.username)
 
     db_user = Models.User(
         username=user.username,
-        email=user.email,
         password_hash=hash_password(user.password),
     )
     db.add(db_user)
     try:
         db.commit()
     except IntegrityError as e:
+        # 同時リクエストが上の存在チェックをすり抜けた場合の保険。
+        # rollbackしないとセッションが失敗状態のまま後続クエリも全て失敗する
         db.rollback()
-        raise EmailAlreadyExistsError(user.email) from e
+        raise UsernameAlreadyExistsError(user.username) from e
     db.refresh(db_user)
     return db_user
 
@@ -53,9 +54,11 @@ def get_user(db: Session, user_id: int) -> Models.User | None:
     return db.get(Models.User, user_id)
 
 
-def get_user_by_email(db: Session, email: str) -> Models.User | None:
-    """メールアドレスでユーザーを取得する"""
-    return db.scalars(select(Models.User).where(Models.User.email == email)).first()
+def get_user_by_username(db: Session, username: str) -> Models.User | None:
+    """ユーザー名でユーザーを取得する"""
+    return db.scalars(
+        select(Models.User).where(Models.User.username == username)
+    ).first()
 
 
 # --- 投稿関連 ---
