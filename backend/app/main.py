@@ -2,21 +2,24 @@ import os
 
 from fastapi import FastAPI, Depends, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-import Schemas, Crud
-from Crud import EmailAlreadyExistsError
 from pydantic import BaseModel  # Schemas.pyで実装待ち
 from sqlalchemy.orm import Session
 
 from app.db import Base, engine, get_db
+from app import Schemas, Crud
+from app.Crud import UsernameAlreadyExistsError
 
+# Schemas.pyに追記して欲しい？Discord見て判断
+# class UserLogin(BaseModel):
+#     user_id: str  # ユーザー識別子
+#     password: str
+# あと、DB系のファイルインポートにて、相対パスのfrom app入れる。
 
-# 消したい部分
-class UserLogin(BaseModel):  # フロント側とは乖離しているemailがid
-    user_id: str  # ユーザー識別子
-    password: str
+# Crud.pyに追記(変更)
+# from app import Models, Schemas
 
-
-# ここまで
+# Models.pyに追記(変更)
+# from app.db import Base
 
 Base.metadata.create_all(bind=engine)
 
@@ -43,29 +46,31 @@ def root():
 def register(user: Schemas.UserCreate, db: Session = Depends(get_db)):
     try:
         new_user = Crud.create_user(db, user)
-    except EmailAlreadyExistsError:
+    except UsernameAlreadyExistsError:
         raise HTTPException(
-            status_code=400, detail="このメールアドレスは既に登録されています"
+            status_code=400, detail="このユーザーIDは既に使われています"
         )
 
     return new_user
 
 
 # ユーザーログイン
+
+
 @app.post("/login", response_model=Schemas.UserResponse)
 def login(
     user: Schemas.UserLogin, db: Session = Depends(get_db)
 ):  # ID(文字列) ログイン
-    login_user = Crud.get_user_by_email(db, user.email)
+    login_user = Crud.get_user_by_username(db, user.username)
 
     if login_user is None:
         raise HTTPException(
-            status_code=400, detail="emailまたはpasswordが間違っています"
+            status_code=400, detail="usernameまたはpasswordが間違っています"
         )
 
     if not Crud.verify_password(user.password, login_user.password_hash):
         raise HTTPException(
-            status_code=400, detail="emailまたはpasswordが間違っています"
+            status_code=400, detail="usernameまたはpasswordが間違っています"
         )
 
     return login_user
