@@ -17,12 +17,21 @@ function BottomNav() {
       </NavLink>
 
       <NavLink
-        to="/feed"
+        to="/view"
         className={({ isActive }) =>
           isActive ? "bottom-nav-item active" : "bottom-nav-item"
         }
       >
         閲覧
+      </NavLink>
+
+      <NavLink
+        to="/search"
+        className={({ isActive }) =>
+          isActive ? "bottom-nav-item active" : "bottom-nav-item"
+        }
+      >
+        検索
       </NavLink>
 
       <NavLink
