@@ -1,4 +1,4 @@
-from pydantic import BaseModel, EmailStr, field_validator
+from pydantic import BaseModel, field_validator
 from datetime import datetime
 
 # パスワードの最小文字数
@@ -10,7 +10,6 @@ PASSWORD_MAX_CHARS = 20
 # --- ユーザー関連 ---
 class UserCreate(BaseModel):
     username: str
-    email: EmailStr
     password: str
 
     @field_validator("password")
@@ -30,7 +29,6 @@ class UserCreate(BaseModel):
 class UserResponse(BaseModel):
     id: int
     username: str
-    email: str
 
     class Config:
         from_attributes = True
