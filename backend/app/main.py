@@ -12,7 +12,7 @@ from app.db import Base, engine, get_db
 
 # 消したい部分
 class UserLogin(BaseModel):  # フロント側とは乖離しているemailがid
-    email: EmailStr
+    user_id: str  # ユーザー識別子
     password: str
 
 
@@ -55,7 +55,7 @@ def register(user: Schemas.UserCreate, db: Session = Depends(get_db)):
 @app.post("/login", response_model=Schemas.UserResponse)
 def login(
     user: Schemas.UserLogin, db: Session = Depends(get_db)
-):  # IDかEmailかで話が変わってくる。
+):  # ID(文字列) ログイン
     login_user = Crud.get_user_by_email(db, user.email)
 
     if login_user is None:
