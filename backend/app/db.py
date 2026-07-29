@@ -16,9 +16,7 @@ load_dotenv(REPO_ROOT / ".env")
 DATABASE_URL = os.getenv("DATABASE_URL")
 
 if not DATABASE_URL:
-    raise RuntimeError(
-        "環境変数 DATABASE_URL が設定されていません。"
-    )
+    raise RuntimeError("環境変数 DATABASE_URL が設定されていません。")
 
 
 _url = make_url(DATABASE_URL)
@@ -34,11 +32,7 @@ if (
 engine = create_engine(_url)
 
 # セッション作成
-SessionLocal = sessionmaker(
-    autocommit=False,
-    autoflush=False,
-    bind=engine
-)
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 # モデルのベース
 Base = declarative_base()

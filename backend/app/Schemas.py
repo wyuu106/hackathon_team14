@@ -7,6 +7,7 @@ PASSWORD_MIN_CHARS = 4
 # パスワードの最大文字数
 PASSWORD_MAX_CHARS = 20
 
+
 # --- ユーザー関連 ---
 class UserCreate(BaseModel):
     username: str
@@ -17,14 +18,11 @@ class UserCreate(BaseModel):
     def password_within_limit(cls, v: str) -> str:
         """パスワードの文字数下限とbcryptのバイト数上限を検証する"""
         if len(v) < PASSWORD_MIN_CHARS:
-            raise ValueError(
-                f"パスワードは{PASSWORD_MIN_CHARS}文字以上にしてください"
-            )
+            raise ValueError(f"パスワードは{PASSWORD_MIN_CHARS}文字以上にしてください")
         if len(v) > PASSWORD_MAX_CHARS:
-            raise ValueError(
-                f"パスワードは{PASSWORD_MAX_CHARS}文字以内にしてください"
-            )
+            raise ValueError(f"パスワードは{PASSWORD_MAX_CHARS}文字以内にしてください")
         return v
+
 
 class UserResponse(BaseModel):
     id: int
@@ -33,9 +31,11 @@ class UserResponse(BaseModel):
     class Config:
         from_attributes = True
 
+
 # --- 投稿関連 ---
 class PostCreate(BaseModel):
     content: str
+
 
 class PostResponse(BaseModel):
     id: int
