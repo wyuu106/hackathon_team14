@@ -74,3 +74,18 @@ def login(
         )
 
     return login_user
+
+
+# メッセージ作成
+@app.post("/messages", response_model=Schemas.PostResponse)
+def post_messages(
+    post: Schemas.PostCreate, user_id: str, db: Session = Depends(get_db)
+):
+    new_post = Crud.create_post(db, post, user_id)
+    return new_post
+
+
+# メッセージ受信
+@app.get("/messages/timeline", response_model=list[Schemas.PostResponse])
+def get_messages(user_id: str, db: Session = Depends(get_db)):
+    return Crud.get_timeline(db, user_id)
