@@ -5,6 +5,7 @@ import Register from "./pages/auth/Register";
 
 import MainLayout from "./layouts/MainLayout";
 import Send from "./pages/main/Send";
+import Search from "./pages/main/Search";
 
 function App() {
   return (
@@ -27,6 +28,11 @@ function App() {
           <Route
             path="/send"
             element={<Send />}
+          />
+
+          <Route
+            path="/search"
+            element={<Search />}
           />
         </Route>
 
