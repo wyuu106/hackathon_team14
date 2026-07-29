@@ -8,7 +8,12 @@ import "./search.css";
 
 function Search() {
   const [userId, setUserId] = useState("");
-  const [user, setUser] = useState(null);
+  //const [user, setUser] = useState(null);
+  const [user, setUser] = useState({
+    id: "test_user",
+    username: "テストユーザー",
+    follow_status: "not_following",
+  });
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
@@ -89,6 +94,9 @@ function Search() {
 
   // フォロー解除処理
   const handleUnfollow = async () => {
+    if (!window.confirm("フォロー解除しますか？")) {
+      return;
+    }
     try {
       await axios.delete(
         `${API_URL}/follow/${user.id}`,
@@ -112,7 +120,6 @@ function Search() {
       <section className="search-container">
         <div className="search-header">
           <h1>ユーザー検索</h1>
-          <p>ユーザーIDを入力して、フォローする相手を探せます。</p>
         </div>
 
         <form
@@ -127,21 +134,20 @@ function Search() {
           </label>
 
           <div className="search-input-group">
-            <span className="search-at">@</span>
 
             <input
               id="userId"
-              className="user-search-input"
+              className="search-input"
               type="text"
               value={userId}
               onChange={handleChange}
-              placeholder="user123"
+              placeholder="IDを入力"
               autoComplete="off"
               maxLength={30}
             />
 
             <button
-              className="user-search-button"
+              className="search-button"
               type="submit"
               disabled={isLoading}
             >
@@ -149,7 +155,7 @@ function Search() {
             </button>
           </div>
 
-          <p className="user-search-description">
+          <p className="search-description">
             空白を含まない正確なユーザーIDを入力してください。
           </p>
         </form>
@@ -165,18 +171,15 @@ function Search() {
 
         {user && (
           <article className="user-card">
-            <div className="user-card-avatar">
-              {user.username?.charAt(0).toUpperCase() || "U"}
-            </div>
 
             <div className="user-card-information">
-              <h2>{user.username}</h2>
-              <p>@{user.id}</p>
+              <h2>{user.id}</h2>
+              <p>{user.username}</p>
             </div>
 
             {user.follow_status === "not_following" && (
               <button
-                className="follow-button"
+                className="follow-button follow"
                 onClick={handleFollow}
               >
                 フォロー
@@ -185,16 +188,17 @@ function Search() {
 
             {user.follow_status === "following" && (
               <button
-                className="follow-button"
+                className="follow-button unfollow"
                 onClick={handleUnfollow}
               >
                 フォローを外す
               </button>
             )}
 
-            {user.follow_status === "request_sent" && (
+            {/* リクエスト機能はいったん保留 */}
+            {user.follow_status === "requested" && (
               <button
-                className="follow-button"
+                className="follow-button requested"
                 disabled
               >
                 リクエスト済み

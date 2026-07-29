@@ -8,32 +8,22 @@
 .search-container {
   width: 100%;
   max-width: 600px;
+  margin: 0 auto;
 }
 
 .search-header {
-  margin-bottom: 28px;
+  margin-bottom: 24px;
 }
 
 .search-header h1 {
-  margin: 0 0 8px;
+  margin: 0;
   color: #222;
   font-size: 28px;
   font-weight: 700;
 }
 
-.search-header p {
-  margin: 0;
-  color: #777;
-  font-size: 14px;
-  line-height: 1.6;
-}
-
 .search-form {
-  padding: 24px;
-  background-color: #fff;
-  border: 1px solid #e5e5e5;
-  border-radius: 16px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+  width: 100%;
 }
 
 .search-label {
@@ -46,37 +36,30 @@
 
 .search-input-group {
   display: flex;
-  align-items: center;
-  overflow: hidden;
-  border: 1px solid #ccc;
-  border-radius: 10px;
-  background-color: #fff;
-  transition:
-    border-color 0.2s,
-    box-shadow 0.2s;
-}
-
-.search-input-group:focus-within {
-  border-color: #1877f2;
-  box-shadow: 0 0 0 3px rgba(24, 119, 242, 0.12);
-}
-
-.search-at {
-  padding-left: 14px;
-  color: #777;
-  font-size: 16px;
-  font-weight: 600;
+  width: 100%;
+  gap: 8px;
 }
 
 .search-input {
   flex: 1;
   min-width: 0;
-  padding: 13px 10px;
-  border: none;
+  height: 48px;
+  padding: 0 16px;
+  border: 1px solid #ccc;
+  border-radius: 9999px;
   outline: none;
+  box-sizing: border-box;
+  background-color: #fff;
   color: #222;
   font-size: 16px;
-  background-color: transparent;
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s;
+}
+
+.search-input:focus {
+  border-color: #1877f2;
+  box-shadow: 0 0 0 3px rgba(24, 119, 242, 0.12);
 }
 
 .search-input::placeholder {
@@ -84,10 +67,12 @@
 }
 
 .search-button {
-  align-self: stretch;
-  min-width: 90px;
-  padding: 0 18px;
+  flex-shrink: 0;
+  width: 90px;
+  height: 48px;
+  padding: 0 16px;
   border: none;
+  border-radius: 9999px;
   background-color: #1877f2;
   color: #fff;
   font-size: 14px;
@@ -95,11 +80,16 @@
   cursor: pointer;
   transition:
     background-color 0.2s,
-    opacity 0.2s;
+    opacity 0.2s,
+    transform 0.1s;
 }
 
 .search-button:hover {
   background-color: #0f68dc;
+}
+
+.search-button:active {
+  transform: scale(0.97);
 }
 
 .search-button:disabled {
@@ -129,24 +119,10 @@
   gap: 14px;
   margin-top: 20px;
   padding: 18px;
-  background-color: #fff;
   border: 1px solid #e5e5e5;
   border-radius: 16px;
+  background-color: #fff;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
-}
-
-.user-card-avatar {
-  flex-shrink: 0;
-  width: 52px;
-  height: 52px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  border-radius: 50%;
-  background-color: #e8f1ff;
-  color: #1877f2;
-  font-size: 22px;
-  font-weight: 700;
 }
 
 .user-card-information {
@@ -156,80 +132,95 @@
 
 .user-card-information h2 {
   margin: 0 0 4px;
-  overflow: hidden;
   color: #222;
-  font-size: 16px;
+  font-size: 17px;
   font-weight: 700;
+  overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 .user-card-information p {
   margin: 0;
-  overflow: hidden;
   color: #777;
   font-size: 14px;
+  overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
+/* フォローボタンベース :*/
 .follow-button {
-  flex-shrink: 0;
-  padding: 9px 16px;
-  border: none;
-  border-radius: 999px;
-  background-color: #1877f2;
-  color: #fff;
-  font-size: 13px;
+  min-width: 100px;
+  padding: 8px 16px;
+  border-radius: 9999px;
+  font-size: 14px;
   font-weight: 600;
   cursor: pointer;
-  transition:
-    background-color 0.2s,
-    transform 0.1s;
+  transition: all 0.2s;
 }
 
-.follow-button:hover {
-  background-color: #0f68dc;
+/* フォロー */
+.follow-button.follow {
+  background-color: #1d9bf0;
+  color: #fff;
+  border: none;
 }
 
-.follow-button:active {
-  transform: scale(0.97);
+.follow-button.follow:hover {
+  background-color: #198cd8;
+}
+
+/* リクエスト済み */
+.follow-button.requested {
+  background-color: #fff;
+  color: #222;
+  border: 1px solid #d0d7de;
+  cursor: default;
+}
+
+/* フォロー解除 */
+.follow-button.unfollow {
+  background-color: #fff;
+  color: #e53935;
+  border: 1px solid #e53935;
+}
+
+.follow-button.unfollow:hover {
+  background-color: #fff5f5;
 }
 
 @media (max-width: 480px) {
-  .user-search-header h1 {
+  .search-header {
+    margin-bottom: 20px;
+  }
+
+  .search-header h1 {
     font-size: 24px;
   }
 
-  .user-search-form {
-    padding: 18px;
+  .search-input-group {
+    gap: 6px;
   }
 
-  .user-search-input-group {
-    flex-wrap: wrap;
+  .search-input {
+    height: 46px;
+    padding: 0 14px;
   }
 
-  .user-search-at {
-    padding-left: 12px;
-  }
-
-  .user-search-input {
-    width: calc(100% - 40px);
-  }
-
-  .user-search-button {
-    width: 100%;
-    min-height: 44px;
-    border-top: 1px solid #ddd;
+  .search-button {
+    width: 76px;
+    height: 46px;
+    padding: 0 10px;
   }
 
   .user-card {
+    gap: 10px;
     padding: 14px;
   }
 
-  .user-card-avatar {
-    width: 46px;
-    height: 46px;
-    font-size: 19px;
+  .follow-button {
+    padding: 8px 12px;
+    font-size: 12px;
   }
 }
