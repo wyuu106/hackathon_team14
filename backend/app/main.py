@@ -6,8 +6,10 @@ from pydantic import BaseModel  # Schemas.pyで実装待ち
 from sqlalchemy.orm import Session
 
 from app.db import Base, engine, get_db
-from app import Schemas, Crud
+from app import Schemas, Crud, Auth
 from app.Crud import UsernameAlreadyExistsError
+from app.Auth import create_access_token
+
 
 # Schemas.pyに追記して欲しい？Discord見て判断
 # class UserLogin(BaseModel):
@@ -57,7 +59,7 @@ def register(user: Schemas.UserCreate, db: Session = Depends(get_db)):
 # ユーザーログイン
 
 
-@app.post("/login", response_model=Schemas.UserResponse)
+@app.post("/login")
 def login(
     user: Schemas.UserLogin, db: Session = Depends(get_db)
 ):  # ID(文字列) ログイン
@@ -73,7 +75,9 @@ def login(
             status_code=400, detail="usernameまたはpasswordが間違っています"
         )
 
-    return login_user
+    access_token = create_access_token(data={"sub": str(login_user.id)})
+
+    return {"access_token": access_token, "token_type": "bearer"}
 
 
 # メッセージ作成
