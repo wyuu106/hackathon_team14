@@ -10,15 +10,15 @@ import "./inbox.css";
 const dummyUsers = [
   {
     id: 1,
-    username: "taro",
+    username: "わたべ",
     read_status: false,
-    latest_message: "今から向かいます",
+    latest_message: "帰宅",
   },
   {
     id: 2,
-    username: "hanako",
+    username: "やまだ",
     read_status: true,
-    latest_message: "了解です",
+    latest_message: "出発",
   },
 ];
 
