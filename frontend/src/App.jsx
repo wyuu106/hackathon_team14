@@ -5,6 +5,8 @@ import Register from "./pages/auth/Register";
 
 import MainLayout from "./layouts/MainLayout";
 import Send from "./pages/main/Send";
+import Inbox from "./pages/main/Inbox";
+// import InboxUser from "./pages/main/InboxUser";
 import Search from "./pages/main/Search";
 
 function App() {
@@ -28,6 +30,16 @@ function App() {
           <Route
             path="/send"
             element={<Send />}
+          />
+
+          <Route
+            path="/inbox"
+            element={<Inbox />}
+          />
+
+          <Route
+            path="/inbox/:userId"
+            element={<Inbox />}
           />
 
           <Route

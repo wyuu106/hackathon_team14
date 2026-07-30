@@ -17,7 +17,7 @@ function BottomNav() {
       </NavLink>
 
       <NavLink
-        to="/view"
+        to="/inbox"
         className={({ isActive }) =>
           isActive ? "bottom-nav-item active" : "bottom-nav-item"
         }
