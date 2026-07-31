@@ -62,7 +62,7 @@ def register(user: Schemas.UserCreate, db: Session = Depends(get_db)):
 def login(
     user: Schemas.UserLogin, db: Session = Depends(get_db)
 ):  # ID(文字列) ログイン
-    login_user = Crud.get_user_by_username(db, user.username)
+    login_user = Crud.get_user_by_user_id(db, user.user_id)
 
     if login_user is None:
         raise HTTPException(
@@ -102,11 +102,11 @@ def get_messages(
 # メッセージ受信(一個人)
 @app.get("/message/{user_id}")
 def get_user_messages(
-    user_id: int,
+    user_id: str,
     current_user: Models.User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
-    target_user = Crud.get_user(db, user_id)
+    target_user = Crud.get_user_by_user_id(db, user_id)
     if target_user is None:
         raise HTTPException(status_code=404, detail="ユーザーが見つかりません")
 
@@ -122,7 +122,7 @@ def get_user_messages(
     ).all()
 
     return {
-        "user_id": target_user.id,
+        "user_id": target_user.user_id,
         "username": target_user.username,
         "messages": [
             {
@@ -161,7 +161,7 @@ def get_following_users(
 
         result.append(
             {
-                "user_id": user.id,
+                "user_id": user.user_id,
                 "username": user.username,
                 "read_status": True,
                 # TODO: 既読機能は未実装のため仮でTrue固定
