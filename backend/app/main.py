@@ -6,9 +6,9 @@ from pydantic import BaseModel  # Schemas.pyで実装待ち
 from sqlalchemy.orm import Session
 
 from app.db import Base, engine, get_db
-from app import Schemas, Crud, Auth
+from app import Schemas, Crud, Auth, Models
 from app.Crud import UsernameAlreadyExistsError
-from app.Auth import create_access_token
+from app.Auth import create_access_token, get_current_user
 
 
 # Schemas.pyに追記して欲しい？Discord見て判断
@@ -83,13 +83,17 @@ def login(
 # メッセージ作成
 @app.post("/messages", response_model=Schemas.PostResponse)
 def post_messages(
-    post: Schemas.PostCreate, user_id: str, db: Session = Depends(get_db)
+    post: Schemas.PostCreate,
+    current_user: Models.User = Depends(get_current_user),
+    db: Session = Depends(get_db),
 ):
-    new_post = Crud.create_post(db, post, user_id)
+    new_post = Crud.create_post(db, post, current_user.id)
     return new_post
 
 
 # メッセージ受信
 @app.get("/messages/timeline", response_model=list[Schemas.PostResponse])
-def get_messages(user_id: str, db: Session = Depends(get_db)):
-    return Crud.get_timeline(db, user_id)
+def get_messages(
+    current_user: Models.User = Depends(get_current_user), db: Session = Depends(get_db)
+):
+    return Crud.get_timeline(db, current_user.id)
