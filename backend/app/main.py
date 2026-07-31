@@ -178,11 +178,11 @@ def get_following_users(
 # ユーザー検索
 @app.get("/users/{user_id}")
 def search_user(
-    user_id: int,
+    user_id: str,
     current_user: Models.User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
-    target_user = Crud.get_user(db, user_id)
+    target_user = Crud.get_user_by_user_id(db, user_id)
     if target_user is None:
         raise HTTPException(status_code=404, detail="ユーザーが見つかりません")
 
@@ -192,7 +192,7 @@ def search_user(
         follow_status = "not_following"
 
     return {
-        "user_id": target_user.id,
+        "user_id": target_user.user_id,
         "username": target_user.username,
         "follow_status": follow_status,
     }
@@ -201,10 +201,14 @@ def search_user(
 # フォロー
 @app.post("/follow/{user_id}")
 def follow(
-    user_id: int,
+    user_id: str,
     current_user: Models.User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
+    target_user = Crud.get_user_by_user_id(db, user_id)
+    if target_user is None:
+        raise HTTPException(status_code=404, detail="ユーザーが見つかりません")
+
     try:
         Crud.follow_user(db, follower_id=current_user.id, followed_id=user_id)
     except ValueError as e:
@@ -217,10 +221,15 @@ def follow(
 
 @app.delete("/follow/{user_id}")
 def unfollow(
-    user_id: int,
+    user_id: str,
     current_user: Models.User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
+
+    target_user = Crud.get_user_by_user_id(db, user_id)
+    if target_user is None:
+        raise HTTPException(status_code=404, detail="ユーザーが見つかりません")
+
     follow_row = db.execute(
         select(Models.follows_table).where(
             Models.follows_table.c.follower_id == current_user.id,
