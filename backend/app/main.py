@@ -91,6 +91,7 @@ def post_messages(
 
 
 # メッセージ受信
+# TODO:現行のフロントでは呼び出されない可能性高
 @app.get("/messages/timeline", response_model=list[Schemas.PostResponse])
 def get_messages(
     current_user: Models.User = Depends(get_current_user), db: Session = Depends(get_db)
@@ -108,6 +109,11 @@ def get_user_messages(
     target_user = Crud.get_user(db, user_id)
     if target_user is None:
         raise HTTPException(status_code=404, detail="ユーザーが見つかりません")
+
+    # TODO:フォロー中の相手かどうかのチェックが本来は必要
+    # 現状は、ログインさえしていればURLの書き換えで誰でも見れる
+    # if user_id != current_user.id and not Crud.is_following(db, current_user.id, user_id):
+    #   raise HTTPException(status_code=403, detail="このユーザーの投稿を閲覧する権限がありません")
 
     posts = db.scalars(
         select(Models.Post)
@@ -157,7 +163,8 @@ def get_following_users(
             {
                 "user_id": user.id,
                 "username": user.username,
-                "read_status": True,  # 既読機能は未実装のため仮でTrue固定
+                "read_status": True,
+                # TODO: 既読機能は未実装のため仮でTrue固定
                 "latest_message": latest_post.content if latest_post else None,
             }
         )
