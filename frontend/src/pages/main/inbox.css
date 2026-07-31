@@ -1,0 +1,91 @@
+.inbox-page {
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+  background-color: #fff;
+}
+
+.inbox-title {
+  margin: 0;
+  padding: 16px 18px;
+  font-size: 22px;
+  font-weight: 700;
+  border-bottom: 1px solid #e5e5e5;
+}
+
+.inbox-list {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.inbox-user-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  width: 100%;
+  padding: 14px 18px;
+  text-align: left;
+  background: #fff;
+  border: none;
+  border-bottom: 1px solid #e5e5e5;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+
+.inbox-user-row:hover {
+  background-color: #f8f8f8;
+}
+
+.user-text {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.user-text h2 {
+  margin: 0;
+  overflow: hidden;
+  color: #222;
+  font-size: 16px;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.latest-message {
+  width: 100%;
+  margin: 4px 0 0;
+  overflow: hidden;
+  color: #777;
+  font-size: 14px;
+  font-weight: 400;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.inbox-user-row.unread .user-text h2 {
+  font-weight: 700;
+}
+
+.inbox-user-row.unread .latest-message {
+  color: #444;
+}
+
+.inbox-loading,
+.inbox-empty {
+  padding: 32px 20px;
+  color: #777;
+  text-align: center;
+}
+
+.unread-dot {
+  width: 10px;
+  height: 10px;
+  margin-left: 12px;
+  border-radius: 50%;
+  background-color: #2196f3;
+  flex-shrink: 0;
+}
