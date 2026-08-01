@@ -1,7 +1,7 @@
 import os
 from pathlib import Path
 from dotenv import load_dotenv
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, event
 from sqlalchemy.engine import make_url
 from sqlalchemy.orm import sessionmaker, declarative_base
 from sqlalchemy.orm import Session
@@ -30,6 +30,16 @@ if (
 
 # DBエンジン作成
 engine = create_engine(_url)
+
+
+if _url.drivername.startswith("sqlite"):
+
+    @event.listens_for(engine, "connect")
+    def _enable_sqlite_foreign_keys(dbapi_connection, connection_record):
+        cursor = dbapi_connection.cursor()
+        cursor.execute("PRAGMA foreign_keys=ON")
+        cursor.close()
+
 
 # セッション作成
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
