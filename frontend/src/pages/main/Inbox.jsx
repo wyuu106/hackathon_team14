@@ -66,7 +66,7 @@ function Inbox() {
       </h1>
 
       <div className="inbox-list">
-        {dummyUsers.map((user) => ( // ここを後で変える
+        {users.map((user) => (
           <button
             key={user.id}
             type="button"

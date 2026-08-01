@@ -61,11 +61,9 @@ function InboxUser() {
     return <p>読み込み中...</p>;
   }
 
-  /*
   if (!messageData) {
     return <p>メッセージを取得できませんでした。</p>;
   }
-    */
 
   return (
     <div className="message-page">
@@ -78,14 +76,14 @@ function InboxUser() {
           戻る
         </button>
 
-        <h1>{dummyMessageData.username}</h1> {/* 後で変える */}
+        <h1>{messageData.username}</h1>
       </header>
 
       <div className="message-list">
-        {dummyMessageData.messages.length === 0 ? ( // 後で変える
+        {messageData.messages.length === 0 ? (
           <p className="message-empty">メッセージはありません。</p>
         ) : (
-          dummyMessageData.messages.map((message) => ( // 後で変える
+          messageData.messages.map((message) => ( 
             <div
               key={message.message_id}
               className="message-item"
