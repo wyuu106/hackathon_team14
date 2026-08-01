@@ -8,12 +8,8 @@ import "./search.css";
 
 function Search() {
   const [userId, setUserId] = useState("");
-  //const [user, setUser] = useState(null);
-  const [user, setUser] = useState({
-    id: "test_user",
-    username: "テストユーザー",
-    follow_status: "not_following",
-  });
+  const [user, setUser] = useState(null);
+
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
