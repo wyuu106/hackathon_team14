@@ -1,9 +1,10 @@
 FROM python:3.12-slim
 
-# Node.jsをインストール
+# sqlite3, Node.jsをインストール
 RUN apt-get update && apt-get install -y \
     curl \
     git \
+    sqlite3 \
     && curl -fsSL https://deb.nodesource.com/setup_22.x | bash - \
     && apt-get install -y nodejs \
     && apt-get clean \
