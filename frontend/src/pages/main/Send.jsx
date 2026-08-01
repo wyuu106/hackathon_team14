@@ -44,7 +44,7 @@ function Send() {
 
     try {
       await axios.post(
-        `${API_URL}/s`,
+        `${API_URL}/post`,
         {
           content: message.content,
         },

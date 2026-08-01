@@ -22,17 +22,24 @@ function Login() {
     });
   };
 
-  const handleLogin = async () => {
+  const handleLogin = async (e) => {
+    e.preventDefault();
+
     try {
       const response = await axios.post(
         `${API_URL}/login`,
         formData
       );
 
-      console.log(response.data);
+      localStorage.setItem(
+        "token",
+        response.data.access_token
+      );
+
+      console.log("login success", response.data);
 
       // ログイン成功後
-      navigate("/");
+      navigate("/send");
 
     } catch (error) {
       console.error(error);
