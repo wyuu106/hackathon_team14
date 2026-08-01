@@ -12,18 +12,6 @@ from app.Crud import UsernameAlreadyExistsError
 from app.Auth import create_access_token, get_current_user
 
 
-# Schemas.pyに追記して欲しい？Discord見て判断
-# class UserLogin(BaseModel):
-#     user_id: str  # ユーザー識別子
-#     password: str
-# あと、DB系のファイルインポートにて、相対パスのfrom app入れる。
-
-# Crud.pyに追記(変更)
-# from app import Models, Schemas
-
-# Models.pyに追記(変更)
-# from app.db import Base
-
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
@@ -133,6 +121,19 @@ def get_user_messages(
             for p in posts
         ],
     }
+
+
+# テンプレートの取得
+TEMPLATES = [
+    {"template_id": 1, "content": "出発"},
+    {"template_id": 2, "content": "帰宅"},
+    {"template_id": 3, "content": "就寝"},
+]
+
+
+@app.get("/templates")
+def get_templates(current_user: Models.User = Depends(get_current_user)):
+    return TEMPLATES
 
 
 # フォロー中のユーザー取得
