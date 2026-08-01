@@ -7,23 +7,6 @@ import { getErrorMessage } from "../../utils/error";
 
 import "./inboxUser.css";
 
-const dummyMessageData = {
-    user_id: 1,
-    username: "わたべ",
-    messages: [
-      {
-        message_id: 1,
-        content: "帰宅",
-        created_at: "2026-07-31:19:00"
-      },
-      {
-        message_id: 2,
-        content: "出発",
-        created_at: "2026-08-01:12:00"
-      }
-    ]
-  };
-
 function InboxUser() {
   const navigate = useNavigate();
   const { userId } = useParams();
@@ -37,7 +20,7 @@ function InboxUser() {
     const fetchMessageData = async () => {
       try {
         const response = await axios.get(
-          `${API_URL}/message/${userId}`,
+          `${API_URL}/messages/${userId}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,

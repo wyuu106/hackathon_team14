@@ -7,21 +7,6 @@ import { getErrorMessage } from "../../utils/error";
 
 import "./inbox.css";
 
-const dummyUsers = [
-  {
-    id: 1,
-    username: "わたべ",
-    read_status: false,
-    latest_message: "帰宅",
-  },
-  {
-    id: 2,
-    username: "やまだ",
-    read_status: true,
-    latest_message: "出発",
-  },
-];
-
 function Inbox() {
   const navigate = useNavigate();
 

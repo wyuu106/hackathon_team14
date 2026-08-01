@@ -32,7 +32,7 @@ function Login() {
       console.log(response.data);
 
       // ログイン成功後
-      navigate("/");
+      navigate("/send");
 
     } catch (error) {
       console.error(error);
