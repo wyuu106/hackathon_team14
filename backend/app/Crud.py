@@ -185,7 +185,7 @@ def get_followed_users(db: Session, current_user_pk: int) -> list[dict]:
             }
         )
 
-    # NULLS LASTの扱いがDBによって違うのでPython側で並べ替える
+    
     result.sort(key=lambda r: (r["_sort_key"] is not None, r["_sort_key"]), reverse=True)
     for row in result:
         del row["_sort_key"]
