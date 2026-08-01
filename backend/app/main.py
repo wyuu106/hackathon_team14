@@ -12,18 +12,6 @@ from app.Crud import UsernameAlreadyExistsError
 from app.Auth import create_access_token, get_current_user
 
 
-# Schemas.pyに追記して欲しい？Discord見て判断
-# class UserLogin(BaseModel):
-#     user_id: str  # ユーザー識別子
-#     password: str
-# あと、DB系のファイルインポートにて、相対パスのfrom app入れる。
-
-# Crud.pyに追記(変更)
-# from app import Models, Schemas
-
-# Models.pyに追記(変更)
-# from app.db import Base
-
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
@@ -66,12 +54,12 @@ def login(
 
     if login_user is None:
         raise HTTPException(
-            status_code=400, detail="usernameまたはpasswordが間違っています"
+            status_code=400, detail="user_idまたはpasswordが間違っています"
         )
 
     if not Crud.verify_password(user.password, login_user.password_hash):
         raise HTTPException(
-            status_code=400, detail="usernameまたはpasswordが間違っています"
+            status_code=400, detail="user_idまたはpasswordが間違っています"
         )
 
     access_token = create_access_token(data={"sub": str(login_user.id)})
@@ -117,7 +105,7 @@ def get_user_messages(
 
     posts = db.scalars(
         select(Models.Post)
-        .where(Models.Post.user_id == user_id)
+        .where(Models.Post.user_id == target_user.id)
         .order_by(Models.Post.created_at.desc())
     ).all()
 
@@ -135,44 +123,25 @@ def get_user_messages(
     }
 
 
+# テンプレートの取得
+@app.get("/templates")
+def get_templates(
+    current_user: Models.User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    return Crud.get_templates(db, current_user.id)
+
+
+# フォロー関係
+
+
 # フォロー中のユーザー取得
 @app.get("/follows")
 def get_following_users(
     current_user: Models.User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
-    followed_ids = db.scalars(
-        select(Models.follows_table.c.followed_id).where(
-            Models.follows_table.c.follower_id == current_user.id
-        )
-    ).all()
-
-    result = []
-    for followed_id in followed_ids:
-        user = Crud.get_user(db, followed_id)
-        if user is None:
-            continue
-
-        latest_post = db.scalars(
-            select(Models.Post)
-            .where(Models.Post.user_id == followed_id)
-            .order_by(Models.Post.created_at.desc())
-        ).first()
-
-        result.append(
-            {
-                "user_id": user.user_id,
-                "username": user.username,
-                "read_status": True,
-                # TODO: 既読機能は未実装のため仮でTrue固定
-                "latest_message": latest_post.content if latest_post else None,
-            }
-        )
-
-    return result
-
-
-# フォロー関係
+    return Crud.get_followed_users(db, current_user.id)
 
 
 # ユーザー検索
@@ -186,7 +155,7 @@ def search_user(
     if target_user is None:
         raise HTTPException(status_code=404, detail="ユーザーが見つかりません")
 
-    if Crud.is_following(db, current_user.id, user_id):
+    if Crud.is_following(db, current_user.id, target_user.id):
         follow_status = "following"
     else:
         follow_status = "not_following"
@@ -210,7 +179,7 @@ def follow(
         raise HTTPException(status_code=404, detail="ユーザーが見つかりません")
 
     try:
-        Crud.follow_user(db, follower_id=current_user.id, followed_id=user_id)
+        Crud.follow_user(db, follower_id=current_user.id, followed_id=target_user.id)
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
     return {"message": "フォローしました"}
@@ -233,7 +202,7 @@ def unfollow(
     follow_row = db.execute(
         select(Models.follows_table).where(
             Models.follows_table.c.follower_id == current_user.id,
-            Models.follows_table.c.followed_id == user_id,
+            Models.follows_table.c.followed_id == target_user.id,
         )
     ).first()
 
@@ -243,7 +212,7 @@ def unfollow(
     db.execute(
         Models.follows_table.delete().where(
             Models.follows_table.c.follower_id == current_user.id,
-            Models.follows_table.c.followed_id == user_id,
+            Models.follows_table.c.followed_id == target_user.id,
         )
     )
     db.commit()
