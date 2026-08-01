@@ -54,8 +54,6 @@ function Inbox() {
 
     fetchFollowingUsers();
   }, [token]);
-  
-  const dummyusers = dummyUsers; // 後で消す
 
   if (isLoading) {
     return <p>読み込み中...</p>;
@@ -68,7 +66,7 @@ function Inbox() {
       </h1>
 
       <div className="inbox-list">
-        {dummyusers.map((user) => ( // ここを後で変える
+        {dummyUsers.map((user) => ( // ここを後で変える
           <button
             key={user.id}
             type="button"
