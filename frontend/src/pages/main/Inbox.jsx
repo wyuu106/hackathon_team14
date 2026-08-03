@@ -58,7 +58,7 @@ function Inbox() {
             className={`inbox-user-row ${
               !user.read_status ? "unread" : ""
             }`}
-            onClick={() => navigate(`/inbox/${user.id}`)}
+            onClick={() => navigate(`/inbox/${user.user_id}`)}
           >
             <div className="user-text">
               <h2>{user.username}</h2>

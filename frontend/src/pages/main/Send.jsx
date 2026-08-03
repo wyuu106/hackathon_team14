@@ -44,7 +44,7 @@ function Send() {
 
     try {
       await axios.post(
-        `${API_URL}/post`,
+        `${API_URL}/messages`,
         {
           content: message.content,
         },
@@ -54,6 +54,9 @@ function Send() {
           },
         }
       );
+
+      alert("送信完了！");
+
     } catch (error) {
       console.error(error);
       alert(getErrorMessage(error));

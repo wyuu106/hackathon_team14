@@ -71,7 +71,7 @@ function Search() {
   const handleFollow = async () => {
     try {
       await axios.post(
-        `${API_URL}/follow/${user.id}`,
+        `${API_URL}/follow/${user.user_id}`,
         {},
         {
           headers: {
@@ -80,7 +80,7 @@ function Search() {
         }
       );
 
-      await fetchUser(user.id); // ユーザー情報再取得
+      await fetchUser(user.user_id); // ユーザー情報再取得
 
     } catch (error) {
       console.error(error);
@@ -95,7 +95,7 @@ function Search() {
     }
     try {
       await axios.delete(
-        `${API_URL}/follow/${user.id}`,
+        `${API_URL}/follow/${user.user_id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -103,7 +103,7 @@ function Search() {
         }
       );
 
-      await fetchUser(user.id); // ユーザー情報再取得
+      await fetchUser(user.user_id); // ユーザー情報再取得
       
     } catch (error) {
       console.error(error);
