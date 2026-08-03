@@ -28,3 +28,11 @@
   opacity: 0.6;
   cursor: not-allowed;
 }
+
+.success-message {
+  margin: 12px 0;
+  color: #28a745;
+  font-size: 15px;
+  font-weight: 600;
+  text-align: center;
+}

@@ -88,7 +88,7 @@ def get_messages(
 
 
 # メッセージ受信(一個人)
-@app.get("/message/{user_id}")
+@app.get("/messages/{user_id}")
 def get_user_messages(
     user_id: str,
     current_user: Models.User = Depends(get_current_user),
