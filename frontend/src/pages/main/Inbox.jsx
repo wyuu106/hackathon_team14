@@ -4,6 +4,7 @@ import axios from "axios";
 
 import { API_URL } from "../../utils/api";
 import { getErrorMessage } from "../../utils/error";
+import { formatJapanDateTime } from "../../utils/date";
 
 import "./inbox.css";
 
@@ -63,9 +64,16 @@ function Inbox() {
             <div className="user-text">
               <h2>{user.username}</h2>
 
-              <p className="latest-message">
-                {user.latest_message ?? "受信メッセージはありません"}
-              </p>
+              <div className="latest-message-row">
+                <p className="latest-message">
+                  {user.latest_message ?? "受信メッセージはありません"}
+                </p>
+                {user.latest_message_at && (
+                  <time className="latest-message-time" dateTime={user.latest_message_at}>
+                    {formatJapanDateTime(user.latest_message_at)}
+                  </time>
+                )}
+              </div>
             </div>
 
             {!user.read_status &&

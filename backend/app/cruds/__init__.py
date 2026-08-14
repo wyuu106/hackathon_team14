@@ -1,5 +1,5 @@
 import bcrypt
-from datetime import datetime, UTC
+from datetime import datetime, timedelta, UTC
 
 from sqlalchemy import and_, delete, func, or_, select, update
 from sqlalchemy.exc import IntegrityError
@@ -113,8 +113,8 @@ def accept_friend_request(db: Session, request: models.FriendRequest, receiver_i
         raise ConflictError("この申請を操作する権限がありません")
     now = utc_now()
     db.execute(models.friendships.insert(), [
-        {"user_id": request.sender_id, "friend_id": request.receiver_id, "last_read_at": now},
-        {"user_id": request.receiver_id, "friend_id": request.sender_id, "last_read_at": now},
+        {"user_id": request.sender_id, "friend_id": request.receiver_id, "last_read_at": now, "accepted_at": now},
+        {"user_id": request.receiver_id, "friend_id": request.sender_id, "last_read_at": now, "accepted_at": now},
     ])
     db.delete(request)
     db.commit()
@@ -164,8 +164,17 @@ def create_post(db: Session, payload: schemas.PostCreate, user_id: int) -> model
 def message_history(db: Session, viewer: models.User, target: models.User) -> list[models.Post]:
     if viewer.id != target.id and not are_friends(db, viewer.id, target.id):
         raise PermissionError
+    cutoff = utc_now() - timedelta(days=7)
+    if viewer.id != target.id:
+        accepted_at = db.scalar(select(models.friendships.c.accepted_at).where(
+            models.friendships.c.user_id == viewer.id,
+            models.friendships.c.friend_id == target.id,
+        ))
+        if accepted_at is not None:
+            cutoff = max(cutoff, accepted_at)
     posts = list(db.scalars(select(models.Post).where(
-        models.Post.user_id == target.id
+        models.Post.user_id == target.id,
+        models.Post.created_at >= cutoff,
     ).order_by(models.Post.created_at, models.Post.id)))
     if viewer.id != target.id:
         now = utc_now()
@@ -183,17 +192,33 @@ def message_history(db: Session, viewer: models.User, target: models.User) -> li
 
 
 def inbox(db: Session, user: models.User) -> list[dict]:
+    week_ago = utc_now() - timedelta(days=7)
     friends = list_friends(db, user.id)
     result = [{"user_id": user.user_id, "username": "自分の送信履歴", "read_status": True,
-               "latest_message": db.scalar(select(models.Post.content).where(models.Post.user_id == user.id).order_by(models.Post.created_at.desc(), models.Post.id.desc()).limit(1)),
+               "latest_message": None, "latest_message_at": None,
                "_self": True, "_date": datetime.max}]
+    own_latest = db.scalar(select(models.Post).where(
+                   models.Post.user_id == user.id, models.Post.created_at >= week_ago
+               ).order_by(models.Post.created_at.desc(), models.Post.id.desc()).limit(1))
+    if own_latest is not None:
+        result[0]["latest_message"] = own_latest.content
+        result[0]["latest_message_at"] = own_latest.created_at
     for friend in friends:
-        latest = db.scalar(select(models.Post).where(models.Post.user_id == friend.id).order_by(models.Post.created_at.desc(), models.Post.id.desc()).limit(1))
-        last_read = db.scalar(select(models.friendships.c.last_read_at).where(
-            models.friendships.c.user_id == user.id, models.friendships.c.friend_id == friend.id))
+        friendship = db.execute(select(
+            models.friendships.c.last_read_at, models.friendships.c.accepted_at
+        ).where(
+            models.friendships.c.user_id == user.id,
+            models.friendships.c.friend_id == friend.id,
+        )).one()
+        last_read, accepted_at = friendship
+        cutoff = max(week_ago, accepted_at) if accepted_at is not None else week_ago
+        latest = db.scalar(select(models.Post).where(
+            models.Post.user_id == friend.id, models.Post.created_at >= cutoff
+        ).order_by(models.Post.created_at.desc(), models.Post.id.desc()).limit(1))
         read = latest is None or (last_read is not None and latest.created_at <= last_read)
         result.append({"user_id": friend.user_id, "username": friend.username, "read_status": read,
-                       "latest_message": latest.content if latest else None, "_self": False,
+                       "latest_message": latest.content if latest else None,
+                       "latest_message_at": latest.created_at if latest else None, "_self": False,
                        "_date": latest.created_at if latest else datetime.min})
     rest = result[1:]
     rest.sort(key=lambda x: x["_date"], reverse=True)

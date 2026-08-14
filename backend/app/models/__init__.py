@@ -16,6 +16,9 @@ friendships = Table(
     Column("user_id", Integer, ForeignKey("users.id", ondelete="CASCADE"), primary_key=True),
     Column("friend_id", Integer, ForeignKey("users.id", ondelete="CASCADE"), primary_key=True),
     Column("last_read_at", DateTime, nullable=True),
+    # 友だちになる前の投稿を見せないため、関係が成立した日時を保持する。
+    # 既存DBの行は移行時にNULLとなるため、履歴取得側では1週間制限のみ適用する。
+    Column("accepted_at", DateTime, nullable=True),
 )
 
 

@@ -45,6 +45,7 @@
 
 .user-text {
   flex: 1;
+  min-width: 0;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -61,13 +62,33 @@
 }
 
 .latest-message {
-  width: 100%;
-  margin: 4px 0 0;
+  min-width: 0;
+  margin: 0;
   overflow: hidden;
   color: var(--text);
   font-size: 14px;
   font-weight: 400;
   text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.latest-message-row {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  width: 100%;
+  margin-top: 4px;
+}
+
+.latest-message {
+  flex: 1;
+}
+
+.latest-message-time {
+  flex-shrink: 0;
+  color: var(--text);
+  font-size: 12px;
+  font-weight: 400;
   white-space: nowrap;
 }
 

@@ -4,6 +4,7 @@ import axios from "axios";
 
 import { API_URL } from "../../utils/api";
 import { getErrorMessage } from "../../utils/error";
+import { formatJapanDateTime } from "../../utils/date";
 
 import "./inboxUser.css";
 
@@ -88,12 +89,7 @@ function InboxUser() {
               <p className="message-content">{message.content}</p>
 
               <time className="message-time">
-                {new Date(message.created_at).toLocaleString("ja-JP", {
-                  month: "numeric",
-                  day: "numeric",
-                  hour: "2-digit",
-                  minute: "2-digit",
-                })}
+                {formatJapanDateTime(message.created_at)}
               </time>
             </div>
           ))

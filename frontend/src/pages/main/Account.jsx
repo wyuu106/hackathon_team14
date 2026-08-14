@@ -11,15 +11,18 @@ const config = () => ({ headers: { Authorization: `Bearer ${localStorage.getItem
 function Account() {
   const [account, setAccount] = useState(null);
   const [friends, setFriends] = useState([]);
+  const [hasPendingRequests, setHasPendingRequests] = useState(false);
 
   const load = async () => {
     try {
-      const [accountResponse, friendsResponse] = await Promise.all([
+      const [accountResponse, friendsResponse, requestsResponse] = await Promise.all([
         axios.get(`${API_URL}/account`, config()),
         axios.get(`${API_URL}/friends`, config()),
+        axios.get(`${API_URL}/friend-requests`, config()),
       ]);
       setAccount(accountResponse.data);
       setFriends(friendsResponse.data);
+      setHasPendingRequests(requestsResponse.data.length > 0);
     } catch (error) {
       alert(getErrorMessage(error));
     }
@@ -46,8 +49,13 @@ function Account() {
       <header className="account-header">
         <div className="account-title-row"><div><h1>アカウント</h1>{account && <p>@{account.user_id} · {account.username}</p>}</div><Link className="settings-link" to="/setting" aria-label="設定">⚙</Link></div>
         <div className="account-menu">
-          <div className="account-stat"><span>{account?.friend_count ?? 0}</span><small>友だち</small></div>
-          <Link className="account-request-link" to="/account/requests"><span>フォローリクエスト</span><b>›</b></Link>
+          <Link className="account-request-link" to="/account/requests">
+            <span>フォローリクエスト</span>
+            <span className="account-request-status">
+              {hasPendingRequests && <span className="request-unread-dot" aria-label="未確認のフォローリクエストあり" />}
+              <b>›</b>
+            </span>
+          </Link>
         </div>
       </header>
       <h2 className="section-title">友だち {account?.friend_count ?? 0}人</h2>

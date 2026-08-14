@@ -9,8 +9,19 @@ function Settings() {
     navigate("/login", { replace: true });
   };
   return <div className="account-page">
-    <header className="sub-header"><button onClick={() => navigate("/account")}>戻る</button><h1>設定</h1></header>
-    <Link className="settings-menu-item" to="/setting/templete"><span className="settings-icon" aria-hidden="true">♡</span><span><strong>テンプレート</strong><small>登録・削除・並び替え</small></span><b>›</b></Link>
+    <header className="sub-header">
+      <button onClick={() => navigate("/account")}>
+        戻る
+      </button>
+
+      <h1>設定</h1>
+    </header>
+    <Link className="settings-menu-item" to="/setting/templete">
+      <span>
+        <strong>テンプレート</strong>
+      </span>
+      <b>›</b>
+    </Link>
     <button className="logout-button" onClick={logout}>ログアウト</button>
   </div>;
 }

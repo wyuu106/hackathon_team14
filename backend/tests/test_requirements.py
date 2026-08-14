@@ -1,4 +1,5 @@
 import pytest
+from datetime import timedelta
 from pydantic import ValidationError
 
 from app import cruds, schemas
@@ -41,10 +42,24 @@ def test_only_friends_can_read_and_readers_are_recorded(db):
 
     request = cruds.create_friend_request(db, bob.id, alice.id)
     cruds.accept_friend_request(db, request, alice.id)
+    # 友だち成立前の投稿は見えない。
+    assert cruds.message_history(db, bob, alice) == []
+
+    post = cruds.create_post(db, schemas.PostCreate(content="友だちになった後"), alice.id)
     assert cruds.message_history(db, bob, alice) == [post]
 
     viewers = cruds.message_viewers(db, post.id, alice.id)
     assert [(viewer["user_id"], viewer["username"]) for viewer in viewers] == [("bob0001", "Bob")]
+
+
+def test_message_history_is_limited_to_the_last_week(db):
+    alice = cruds.create_user(db, user_payload("alice01", "Alice"))
+    recent = cruds.create_post(db, schemas.PostCreate(content="最近"), alice.id)
+    old = cruds.create_post(db, schemas.PostCreate(content="8日前"), alice.id)
+    old.created_at = cruds.utc_now() - timedelta(days=8)
+    db.commit()
+
+    assert cruds.message_history(db, alice, alice) == [recent]
 
 
 def test_inbox_starts_with_own_history_then_unread_friend(db):
@@ -59,6 +74,8 @@ def test_inbox_starts_with_own_history_then_unread_friend(db):
     assert rows[0]["user_id"] == "alice01"
     assert rows[1]["user_id"] == "bob0001"
     assert rows[1]["read_status"] is False
+    assert rows[1]["latest_message"] == "新着です"
+    assert rows[1]["latest_message_at"] is not None
 
 
 def test_templates_can_be_reordered_and_deleted_by_owner(db):

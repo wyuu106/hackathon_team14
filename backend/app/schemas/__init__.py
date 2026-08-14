@@ -49,6 +49,7 @@ class UserSearchResponse(UserResponse):
 class FriendResponse(UserResponse):
     read_status: bool = True
     latest_message: str | None = None
+    latest_message_at: datetime | None = None
 
 
 class FriendRequestResponse(BaseModel):

@@ -2,12 +2,13 @@ import os
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.db import Base, engine
+from app.db import Base, apply_schema_updates, engine
 from app import models
 from app.routers import account, auth, messages, social
 
 
 Base.metadata.create_all(bind=engine)
+apply_schema_updates()
 
 app = FastAPI()
 

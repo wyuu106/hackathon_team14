@@ -78,7 +78,7 @@ function Send() {
   return (
     <div className="send-page">
       <header className="page-heading">
-        <h1>メッセージを送る</h1>
+        <h1>クイックチャット</h1>
       </header>
 
       <div className="template-list">

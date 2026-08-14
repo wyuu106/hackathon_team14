@@ -1,7 +1,7 @@
 import os
 from pathlib import Path
 from dotenv import load_dotenv
-from sqlalchemy import create_engine, event
+from sqlalchemy import create_engine, event, inspect, text
 from sqlalchemy.engine import make_url
 from sqlalchemy.orm import sessionmaker, declarative_base
 from sqlalchemy.orm import Session
@@ -46,6 +46,19 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 # モデルのベース
 Base = declarative_base()
+
+
+def apply_schema_updates() -> None:
+    """Alembic導入前の既存DBへ、小さな後方互換スキーマ更新を適用する。"""
+    inspector = inspect(engine)
+    if "friendships" not in inspector.get_table_names():
+        return
+    columns = {column["name"] for column in inspector.get_columns("friendships")}
+    if "accepted_at" in columns:
+        return
+    column_type = "TIMESTAMP" if engine.dialect.name == "postgresql" else "DATETIME"
+    with engine.begin() as connection:
+        connection.execute(text(f"ALTER TABLE friendships ADD COLUMN accepted_at {column_type}"))
 
 
 def get_db():
