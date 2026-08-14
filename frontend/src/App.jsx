@@ -15,7 +15,7 @@ function App() {
       <Routes>
         {/* ログイン */}
         <Route
-          path="login" // URL
+          path="/login" // URL
           element={<Login />} // page関数
         />
 
