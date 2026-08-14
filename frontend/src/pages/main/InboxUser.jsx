@@ -13,6 +13,7 @@ function InboxUser() {
 
   const [messageData, setMessageData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [viewers, setViewers] = useState(null);
 
   const token = localStorage.getItem("token");
 
@@ -40,6 +41,18 @@ function InboxUser() {
     fetchMessageData();
   }, [userId, token]);
 
+  const showViewers = async (messageId) => {
+    if (!messageData.is_own) return;
+    try {
+      const response = await axios.get(`${API_URL}/messages/${messageId}/viewers`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setViewers(response.data);
+    } catch (error) {
+      alert(getErrorMessage(error));
+    }
+  };
+
   if (isLoading) {
     return <p>読み込み中...</p>;
   }
@@ -54,7 +67,7 @@ function InboxUser() {
         <button
           type="button"
           className="back-button"
-          onClick={() => navigate("/inbox")}
+          onClick={() => navigate("/view")}
         >
           戻る
         </button>
@@ -70,6 +83,7 @@ function InboxUser() {
             <div
               key={message.message_id}
               className="message-item"
+              onClick={() => showViewers(message.message_id)}
             >
               <p className="message-content">{message.content}</p>
 
@@ -85,6 +99,13 @@ function InboxUser() {
           ))
         )}
       </div>
+      {viewers && <div className="viewer-backdrop" onClick={() => setViewers(null)}>
+        <section className="viewer-sheet" onClick={(event) => event.stopPropagation()}>
+          <h2>閲覧したユーザー</h2>
+          {viewers.length === 0 ? <p>まだ閲覧されていません。</p> : viewers.map((viewer) => <p key={viewer.user_id}>{viewer.username} <small>@{viewer.user_id}</small></p>)}
+          <button onClick={() => setViewers(null)}>閉じる</button>
+        </section>
+      </div>}
     </div>
   );
 }

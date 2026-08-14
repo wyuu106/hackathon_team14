@@ -19,7 +19,7 @@ function Inbox() {
     const fetchFollowingUsers = async () => {
       try {
         const response = await axios.get(
-          `${API_URL}/follows`,
+          `${API_URL}/inbox`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -53,12 +53,12 @@ function Inbox() {
       <div className="inbox-list">
         {users.map((user) => (
           <button
-            key={user.id}
+            key={user.user_id}
             type="button"
             className={`inbox-user-row ${
               !user.read_status ? "unread" : ""
             }`}
-            onClick={() => navigate(`/inbox/${user.user_id}`)}
+            onClick={() => navigate(`/view/${user.user_id}`)}
           >
             <div className="user-text">
               <h2>{user.username}</h2>

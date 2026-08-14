@@ -88,6 +88,18 @@ function Search() {
     }
   };
 
+  const handleCancelRequest = async () => {
+    if (!window.confirm("フォローリクエストを棄却しますか？")) return;
+    try {
+      await axios.delete(`${API_URL}/friend-requests/to/${user.user_id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      await fetchUser(user.user_id);
+    } catch (error) {
+      alert(getErrorMessage(error));
+    }
+  };
+
   // フォロー解除処理
   const handleUnfollow = async () => {
     if (!window.confirm("フォロー解除しますか？")) {
@@ -95,7 +107,7 @@ function Search() {
     }
     try {
       await axios.delete(
-        `${API_URL}/follow/${user.user_id}`,
+        `${API_URL}/friends/${user.user_id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -169,7 +181,7 @@ function Search() {
           <article className="user-card">
 
             <div className="user-card-information">
-              <h2>{user.id}</h2>
+              <h2>{user.user_id}</h2>
               <p>{user.username}</p>
             </div>
 
@@ -182,7 +194,7 @@ function Search() {
               </button>
             )}
 
-            {user.follow_status === "following" && (
+            {user.follow_status === "friends" && (
               <button
                 className="follow-button unfollow"
                 onClick={handleUnfollow}
@@ -191,15 +203,16 @@ function Search() {
               </button>
             )}
 
-            {/* リクエスト機能はいったん保留 */}
             {user.follow_status === "requested" && (
               <button
                 className="follow-button requested"
-                disabled
+                onClick={handleCancelRequest}
               >
-                リクエスト済み
+                リクエスト中
               </button>
             )}
+
+            {user.follow_status === "incoming" && <span className="search-description">申請が届いています</span>}
           </article>
         )}
       </section>

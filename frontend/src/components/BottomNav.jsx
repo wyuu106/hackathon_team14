@@ -8,7 +8,7 @@ function BottomNav() {
   return (
     <nav className="bottom-nav">
       <NavLink
-        to="/send"
+        to="/chat"
         className={({ isActive }) =>
           isActive ? "bottom-nav-item active" : "bottom-nav-item"
         }
@@ -17,7 +17,7 @@ function BottomNav() {
       </NavLink>
 
       <NavLink
-        to="/inbox"
+        to="/view"
         className={({ isActive }) =>
           isActive ? "bottom-nav-item active" : "bottom-nav-item"
         }

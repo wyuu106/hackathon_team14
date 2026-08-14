@@ -17,7 +17,7 @@
 
 .search-header h1 {
   margin: 0;
-  color: #222;
+  color: var(--text-h);
   font-size: 28px;
   font-weight: 700;
 }
@@ -29,7 +29,7 @@
 .search-label {
   display: block;
   margin-bottom: 8px;
-  color: #333;
+  color: var(--text-h);
   font-size: 14px;
   font-weight: 600;
 }
@@ -45,12 +45,12 @@
   min-width: 0;
   height: 48px;
   padding: 0 16px;
-  border: 1px solid #ccc;
+  border: 1px solid var(--border);
   border-radius: 9999px;
   outline: none;
   box-sizing: border-box;
   background-color: #fff;
-  color: #222;
+  color: var(--text-h);
   font-size: 16px;
   transition:
     border-color 0.2s,
@@ -58,8 +58,8 @@
 }
 
 .search-input:focus {
-  border-color: #1877f2;
-  box-shadow: 0 0 0 3px rgba(24, 119, 242, 0.12);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(233, 79, 135, 0.14);
 }
 
 .search-input::placeholder {
@@ -73,7 +73,7 @@
   padding: 0 16px;
   border: none;
   border-radius: 9999px;
-  background-color: #1877f2;
+  background-color: var(--accent);
   color: #fff;
   font-size: 14px;
   font-weight: 600;
@@ -85,7 +85,7 @@
 }
 
 .search-button:hover {
-  background-color: #0f68dc;
+  background-color: var(--accent-dark);
 }
 
 .search-button:active {
@@ -119,10 +119,10 @@
   gap: 14px;
   margin-top: 20px;
   padding: 18px;
-  border: 1px solid #e5e5e5;
+  border: 1px solid var(--border);
   border-radius: 16px;
   background-color: #fff;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+  box-shadow: var(--shadow);
 }
 
 .user-card-information {
@@ -132,7 +132,7 @@
 
 .user-card-information h2 {
   margin: 0 0 4px;
-  color: #222;
+  color: var(--text-h);
   font-size: 17px;
   font-weight: 700;
   overflow: hidden;
@@ -162,13 +162,13 @@
 
 /* フォロー */
 .follow-button.follow {
-  background-color: #1d9bf0;
+  background-color: var(--accent);
   color: #fff;
   border: none;
 }
 
 .follow-button.follow:hover {
-  background-color: #198cd8;
+  background-color: var(--accent-dark);
 }
 
 /* リクエスト済み */

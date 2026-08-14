@@ -40,7 +40,12 @@ function Register() {
     }
 
     if (formData.password !== formData.passwordConfirm) {
-      setErrorMessage("パスワードが一致していません。");
+      setErrorMessage("パスワードが間違っています");
+      return;
+    }
+
+    if (!/^[A-Za-z0-9]{6,}$/.test(formData.id) || !/^[A-Za-z0-9]{6,}$/.test(formData.password)) {
+      setErrorMessage("IDとパスワードは英字と数字のみで6文字以上にしてください。");
       return;
     }
 
@@ -52,7 +57,7 @@ function Register() {
           password: formData.password,
       });
 
-      alert("登録が完了しました");
+      alert("ユーザー登録が完了しました");
       navigate("/login");
 
     } catch (error) {
@@ -124,7 +129,7 @@ function Register() {
 
         <Link
           className="auth-link"
-          to="/"
+          to="/login"
         >
           ログイン画面へ戻る
         </Link>

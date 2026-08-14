@@ -3,6 +3,10 @@
   max-width: 600px;
   margin: 0 auto;
   background-color: #fff;
+  border: 1px solid var(--border);
+  border-radius: 22px;
+  overflow: hidden;
+  box-shadow: var(--shadow);
 }
 
 .inbox-title {
@@ -10,7 +14,8 @@
   padding: 16px 18px;
   font-size: 22px;
   font-weight: 700;
-  border-bottom: 1px solid #e5e5e5;
+  border-bottom: 1px solid var(--border);
+  color: var(--text-h);
 }
 
 .inbox-list {
@@ -29,13 +34,13 @@
   text-align: left;
   background: #fff;
   border: none;
-  border-bottom: 1px solid #e5e5e5;
+  border-bottom: 1px solid var(--border);
   cursor: pointer;
   box-sizing: border-box;
 }
 
 .inbox-user-row:hover {
-  background-color: #f8f8f8;
+  background-color: var(--surface-soft);
 }
 
 .user-text {
@@ -48,7 +53,7 @@
 .user-text h2 {
   margin: 0;
   overflow: hidden;
-  color: #222;
+  color: var(--text-h);
   font-size: 16px;
   font-weight: 600;
   text-overflow: ellipsis;
@@ -59,7 +64,7 @@
   width: 100%;
   margin: 4px 0 0;
   overflow: hidden;
-  color: #777;
+  color: var(--text);
   font-size: 14px;
   font-weight: 400;
   text-overflow: ellipsis;
@@ -86,6 +91,7 @@
   height: 10px;
   margin-left: 12px;
   border-radius: 50%;
-  background-color: #2196f3;
+  background-color: var(--accent);
+  box-shadow: 0 0 0 4px var(--accent-soft);
   flex-shrink: 0;
 }

@@ -9,6 +9,7 @@ import "./send.css"
 function Send() {
   const [templates, setTemplates] = useState([]);
   const [sendingId, setSendingId] = useState(null);
+  const [freeMessage, setFreeMessage] = useState("");
 
   const token = localStorage.getItem("token");
 
@@ -66,11 +67,22 @@ function Send() {
     }
   };
 
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    const content = freeMessage.trim();
+    if (!content) return;
+    await handleSendMessage({ id: "free", content });
+    setFreeMessage("");
+  };
+
   return (
-    <div>
-      <h2>クイックチャット</h2>
+    <div className="send-page">
+      <header className="page-heading">
+        <h1>メッセージを送る</h1>
+      </header>
 
       <div className="template-list">
+        {templates.length === 0 && <p className="template-empty">設定画面から定型文を登録できます。</p>}
         {templates.map((template) => (
           <button
             key={template.id}
@@ -85,6 +97,12 @@ function Send() {
           </button>
         ))}
       </div>
+
+      <form className="free-message-form" onSubmit={handleSubmit}>
+        <label htmlFor="free-message">自由入力</label>
+        <div><input id="free-message" value={freeMessage} onChange={(event) => setFreeMessage(event.target.value)} maxLength={1000} placeholder="メッセージを入力" />
+        <button type="submit" disabled={!freeMessage.trim() || sendingId !== null}>送信</button></div>
+      </form>
     </div>
   );
 }

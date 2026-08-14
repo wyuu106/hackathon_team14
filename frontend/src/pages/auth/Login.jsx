@@ -39,7 +39,7 @@ function Login() {
       console.log("login success", response.data);
 
       // ログイン成功後
-      navigate("/send");
+      navigate("/chat");
 
     } catch (error) {
       console.error(error);
