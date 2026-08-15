@@ -1,8 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import axios from "axios";
-
-import { API_URL } from "../../utils/api";
+import { api } from "../../utils/api";
 import { getErrorMessage } from "../../utils/error";
 import { formatJapanDateTime } from "../../utils/date";
 
@@ -16,19 +14,10 @@ function InboxUser() {
   const [isLoading, setIsLoading] = useState(true);
   const [viewers, setViewers] = useState(null);
 
-  const token = localStorage.getItem("token");
-
   useEffect(() => {
     const fetchMessageData = async () => {
       try {
-        const response = await axios.get(
-          `${API_URL}/messages/${userId}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
+        const response = await api.get(`/messages/${userId}`);
 
         setMessageData(response.data);
       } catch (error) {
@@ -40,14 +29,12 @@ function InboxUser() {
     };
 
     fetchMessageData();
-  }, [userId, token]);
+  }, [userId]);
 
   const showViewers = async (messageId) => {
     if (!messageData.is_own) return;
     try {
-      const response = await axios.get(`${API_URL}/messages/${messageId}/viewers`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await api.get(`/messages/${messageId}/viewers`);
       setViewers(response.data);
     } catch (error) {
       alert(getErrorMessage(error));

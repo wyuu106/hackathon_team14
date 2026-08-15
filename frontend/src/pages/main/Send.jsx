@@ -1,7 +1,5 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
-
-import { API_URL } from "../../utils/api";
+import { api } from "../../utils/api";
 import { getErrorMessage } from "../../utils/error";
 
 import "./send.css"
@@ -11,19 +9,10 @@ function Send() {
   const [sendingId, setSendingId] = useState(null);
   const [freeMessage, setFreeMessage] = useState("");
 
-  const token = localStorage.getItem("token");
-
   useEffect(() => {
     const fetchTemplates = async () => {
       try {
-        const response = await axios.get(
-          `${API_URL}/templates`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
+        const response = await api.get("/templates");
 
         setTemplates(response.data);
 
@@ -34,7 +23,7 @@ function Send() {
     };
 
     fetchTemplates();
-  }, [token]);
+  }, []);
 
   const handleSendMessage = async (message) => {
     if (sendingId !== null) {
@@ -44,17 +33,7 @@ function Send() {
     setSendingId(message.id);
 
     try {
-      await axios.post(
-        `${API_URL}/messages`,
-        {
-          content: message.content,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      await api.post("/messages", { content: message.content });
 
       alert("送信完了！");
 

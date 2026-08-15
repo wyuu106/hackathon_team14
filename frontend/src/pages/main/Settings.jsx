@@ -1,11 +1,13 @@
 import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../../contexts/auth-context";
 import "./account.css";
 
 function Settings() {
   const navigate = useNavigate();
-  const logout = () => {
+  const { logout } = useAuth();
+  const handleLogout = async () => {
     if (!window.confirm("本当にログアウトしますか？")) return;
-    localStorage.removeItem("token");
+    await logout();
     navigate("/login", { replace: true });
   };
   return <div className="account-page">
@@ -22,7 +24,7 @@ function Settings() {
       </span>
       <b>›</b>
     </Link>
-    <button className="settings-menu-item logout-button" onClick={logout}>
+    <button className="settings-menu-item logout-button" onClick={handleLogout}>
       <strong>ログアウト</strong>
     </button>
   </div>;

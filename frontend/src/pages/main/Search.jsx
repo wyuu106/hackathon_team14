@@ -1,7 +1,5 @@
 import { useState } from "react";
-import axios from "axios";
-
-import { API_URL } from "../../utils/api";
+import { api } from "../../utils/api";
 import { getErrorMessage } from "../../utils/error";
 
 import "./search.css";
@@ -13,8 +11,6 @@ function Search() {
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
-  const token = localStorage.getItem("token");
-
   const handleChange = (event) => {
     const value = event.target.value;
 
@@ -24,14 +20,7 @@ function Search() {
 
   // IDからユーザー取得
   const fetchUser = async (targetUserId) => {
-    const response = await axios.get(
-      `${API_URL}/users/${encodeURIComponent(targetUserId)}`,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
+    const response = await api.get(`/users/${encodeURIComponent(targetUserId)}`);
 
     setUser(response.data);
   };
@@ -70,15 +59,7 @@ function Search() {
   // フォロー（リクエスト送信）処理
   const handleFollow = async () => {
     try {
-      await axios.post(
-        `${API_URL}/follow/${user.user_id}`,
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      await api.post(`/follow/${user.user_id}`);
 
       await fetchUser(user.user_id); // ユーザー情報再取得
 
@@ -91,9 +72,7 @@ function Search() {
   const handleCancelRequest = async () => {
     if (!window.confirm("フォローリクエストを棄却しますか？")) return;
     try {
-      await axios.delete(`${API_URL}/friend-requests/to/${user.user_id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      await api.delete(`/friend-requests/to/${user.user_id}`);
       await fetchUser(user.user_id);
     } catch (error) {
       alert(getErrorMessage(error));
@@ -106,14 +85,7 @@ function Search() {
       return;
     }
     try {
-      await axios.delete(
-        `${API_URL}/friends/${user.user_id}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      await api.delete(`/friends/${user.user_id}`);
 
       await fetchUser(user.user_id); // ユーザー情報再取得
       

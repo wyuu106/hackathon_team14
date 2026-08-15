@@ -1,12 +1,8 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import axios from "axios";
-
-import { API_URL } from "../../utils/api";
+import { api } from "../../utils/api";
 import { getErrorMessage } from "../../utils/error";
 import "./account.css";
-
-const config = () => ({ headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } });
 
 function Account() {
   const [account, setAccount] = useState(null);
@@ -16,9 +12,9 @@ function Account() {
   const load = async () => {
     try {
       const [accountResponse, friendsResponse, requestsResponse] = await Promise.all([
-        axios.get(`${API_URL}/account`, config()),
-        axios.get(`${API_URL}/friends`, config()),
-        axios.get(`${API_URL}/friend-requests`, config()),
+        api.get("/account"),
+        api.get("/friends"),
+        api.get("/friend-requests"),
       ]);
       setAccount(accountResponse.data);
       setFriends(friendsResponse.data);
@@ -37,7 +33,7 @@ function Account() {
   const removeFriend = async (friend) => {
     if (!window.confirm(`${friend.username}さんとの友だち関係を解除しますか？`)) return;
     try {
-      await axios.delete(`${API_URL}/friends/${friend.user_id}`, config());
+      await api.delete(`/friends/${friend.user_id}`);
       await load();
     } catch (error) {
       alert(getErrorMessage(error));

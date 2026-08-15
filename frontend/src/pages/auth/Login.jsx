@@ -1,14 +1,14 @@
 import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
-import axios from "axios";
+import { useNavigate, Link, Navigate } from "react-router-dom";
 
-import { API_URL } from "../../utils/api";
+import { useAuth } from "../../contexts/auth-context";
 import { getErrorMessage } from "../../utils/error";
 
 import "./auth.css";
 
 function Login() {
   const navigate = useNavigate();
+  const { authStatus, login } = useAuth();
 
   const [formData, setFormData] = useState({
     id: "",
@@ -26,19 +26,7 @@ function Login() {
     e.preventDefault();
 
     try {
-      const response = await axios.post(
-        `${API_URL}/login`,
-        formData
-      );
-
-      localStorage.setItem(
-        "token",
-        response.data.access_token
-      );
-
-      console.log("login success", response.data);
-
-      // ログイン成功後
+      await login(formData);
       navigate("/chat");
 
     } catch (error) {
@@ -46,6 +34,8 @@ function Login() {
       alert(getErrorMessage(error));
     }
   };
+
+  if (authStatus === "authenticated") return <Navigate to="/chat" replace />;
 
   return (
     <div className="auth-page">

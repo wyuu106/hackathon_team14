@@ -1,18 +1,14 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
-
-import { API_URL } from "../../utils/api";
+import { api } from "../../utils/api";
 import { getErrorMessage } from "../../utils/error";
 import "./account.css";
-
-const config = () => ({ headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } });
 
 function FriendRequests() {
   const navigate = useNavigate();
   const [requests, setRequests] = useState([]);
   const load = async () => {
-    try { setRequests((await axios.get(`${API_URL}/friend-requests`, config())).data); }
+    try { setRequests((await api.get("/friend-requests")).data); }
     catch (error) { alert(getErrorMessage(error)); }
   };
   useEffect(() => {
@@ -22,12 +18,12 @@ function FriendRequests() {
   }, []);
 
   const accept = async (id) => {
-    try { await axios.post(`${API_URL}/friend-requests/${id}/accept`, {}, config()); await load(); }
+    try { await api.post(`/friend-requests/${id}/accept`); await load(); }
     catch (error) { alert(getErrorMessage(error)); }
   };
   const reject = async (id) => {
     if (!window.confirm("このリクエストを却下しますか？")) return;
-    try { await axios.delete(`${API_URL}/friend-requests/${id}`, config()); await load(); }
+    try { await api.delete(`/friend-requests/${id}`); await load(); }
     catch (error) { alert(getErrorMessage(error)); }
   };
 

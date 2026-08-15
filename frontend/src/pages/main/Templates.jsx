@@ -1,12 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
-
-import { API_URL } from "../../utils/api";
+import { api } from "../../utils/api";
 import { getErrorMessage } from "../../utils/error";
 import "./templates.css";
-
-const config = () => ({ headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } });
 
 function Templates() {
   const navigate = useNavigate();
@@ -20,7 +16,7 @@ function Templates() {
   useEffect(() => {
     void (async () => {
       try {
-        const response = await axios.get(`${API_URL}/templates`, config());
+        const response = await api.get("/templates");
         setTemplates(response.data);
         latestTemplates.current = response.data;
       } catch (error) {
@@ -40,7 +36,7 @@ function Templates() {
     if (!value) return;
     setIsSaving(true);
     try {
-      const response = await axios.post(`${API_URL}/templates`, { content: value }, config());
+      const response = await api.post("/templates", { content: value });
       updateTemplates([...latestTemplates.current, response.data]);
       setContent("");
     } catch (error) {
@@ -53,7 +49,7 @@ function Templates() {
   const remove = async (template) => {
     if (!window.confirm("このテンプレートを削除しますか？")) return;
     try {
-      await axios.delete(`${API_URL}/templates/${template.id}`, config());
+      await api.delete(`/templates/${template.id}`);
       updateTemplates(latestTemplates.current.filter((item) => item.id !== template.id));
     } catch (error) {
       alert(getErrorMessage(error));
@@ -62,9 +58,9 @@ function Templates() {
 
   const persistOrder = async () => {
     try {
-      await axios.put(`${API_URL}/templates/order`, {
+      await api.put("/templates/order", {
         template_ids: latestTemplates.current.map((template) => template.id),
-      }, config());
+      });
     } catch (error) {
       alert(getErrorMessage(error));
     }

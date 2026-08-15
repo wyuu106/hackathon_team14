@@ -1,8 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
-
-import { API_URL } from "../../utils/api";
+import { api } from "../../utils/api";
 import { getErrorMessage } from "../../utils/error";
 import { formatJapanDateTime } from "../../utils/date";
 
@@ -14,19 +12,10 @@ function Inbox() {
   const [users, setUsers] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  const token = localStorage.getItem("token");
-  
   useEffect(() => {
     const fetchFollowingUsers = async () => {
       try {
-        const response = await axios.get(
-          `${API_URL}/inbox`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
+        const response = await api.get("/inbox");
 
         setUsers(response.data);
 
@@ -39,7 +28,7 @@ function Inbox() {
     };
 
     fetchFollowingUsers();
-  }, [token]);
+  }, []);
 
   if (isLoading) {
     return <p>読み込み中...</p>;

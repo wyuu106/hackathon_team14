@@ -1,8 +1,6 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import axios from "axios";
-
-import { API_URL } from "../../utils/api";
+import { publicApi } from "../../utils/api";
 import { getErrorMessage } from "../../utils/error";
 
 import "./auth.css";
@@ -50,8 +48,8 @@ function Register() {
     }
 
     try {
-      await axios.post(
-        `${API_URL}/register`, {
+      await publicApi.post(
+        "/register", {
           id: formData.id.trim(),
           username: formData.username.trim(),
           password: formData.password,
