@@ -2,17 +2,11 @@ import os
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.db import Base, apply_schema_updates, engine
-from app import models
 from app.routers import chat_router, user_router
-
-
-Base.metadata.create_all(bind=engine)
-apply_schema_updates()
 
 app = FastAPI()
 
-origins = os.getenv("ALLOW_ORIGINS", "").split(",")
+origins = [origin.strip() for origin in os.getenv("ALLOW_ORIGINS", "").split(",") if origin.strip()]
 
 app.add_middleware(
     CORSMiddleware,

@@ -1,13 +1,71 @@
-from fastapi import APIRouter, Depends, HTTPException, Response
+import os
+
+from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
+from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
 
 from app.Auth import create_access_token, get_current_user
-from app.cruds import user_crud
+from app.cruds import auth_crud, user_crud
 from app.db import get_db
 from app.models import user_model
 from app.schemas import user_schema
 
 router = APIRouter(tags=["users"])
+
+REFRESH_TOKEN_DAYS = int(os.getenv("REFRESH_TOKEN_DAYS", 60))
+REFRESH_COOKIE_NAME = os.getenv("REFRESH_COOKIE_NAME", "refresh_token")
+COOKIE_SECURE = os.getenv("COOKIE_SECURE", "false").lower() == "true"
+COOKIE_SAMESITE = os.getenv("COOKIE_SAMESITE", "lax").lower()
+ALLOWED_ORIGINS = {
+    origin.strip()
+    for origin in os.getenv("ALLOW_ORIGINS", "").split(",")
+    if origin.strip()
+}
+
+
+def validate_request_origin(request: Request) -> None:
+    origin = request.headers.get("origin")
+    if origin and origin not in ALLOWED_ORIGINS:
+        raise HTTPException(status_code=403, detail="許可されていないリクエストです")
+
+
+def set_refresh_cookie(response: Response, token: str) -> None:
+    response.set_cookie(
+        key=REFRESH_COOKIE_NAME,
+        value=token,
+        max_age=REFRESH_TOKEN_DAYS * 24 * 60 * 60,
+        httponly=True,
+        secure=COOKIE_SECURE,
+        samesite=COOKIE_SAMESITE,
+        path="/auth",
+    )
+
+
+def clear_refresh_cookie(response: Response) -> None:
+    response.delete_cookie(
+        key=REFRESH_COOKIE_NAME,
+        httponly=True,
+        secure=COOKIE_SECURE,
+        samesite=COOKIE_SAMESITE,
+        path="/auth",
+    )
+
+
+def invalid_session_response(detail: str) -> JSONResponse:
+    response = JSONResponse(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        content={"detail": detail},
+    )
+    clear_refresh_cookie(response)
+    return response
+
+
+def auth_response(user: user_model.User) -> dict:
+    return {
+        "access_token": create_access_token({"sub": str(user.id)}),
+        "token_type": "bearer",
+        "user": user,
+    }
 
 
 @router.post("/register", response_model=user_schema.UserResponse, status_code=201)
@@ -18,12 +76,60 @@ def register(payload: user_schema.UserCreate, db: Session = Depends(get_db)):
         raise HTTPException(status_code=400, detail="このIDは既に使用されています") from exc
 
 
-@router.post("/login")
-def login(payload: user_schema.UserLogin, db: Session = Depends(get_db)):
+@router.post("/login", response_model=user_schema.AuthResponse)
+def login(
+    payload: user_schema.UserLogin,
+    request: Request,
+    response: Response,
+    db: Session = Depends(get_db),
+):
+    validate_request_origin(request)
     user = user_crud.get_user_by_user_id(db, payload.user_id)
     if user is None or not user_crud.verify_password(payload.password, user.password_hash):
         raise HTTPException(status_code=400, detail="IDまたはパスワードが間違っています")
-    return {"access_token": create_access_token({"sub": str(user.id)}), "token_type": "bearer"}
+    refresh_token, _ = auth_crud.create_refresh_session(
+        db, user.id, REFRESH_TOKEN_DAYS
+    )
+    set_refresh_cookie(response, refresh_token)
+    return auth_response(user)
+
+
+@router.post("/auth/refresh", response_model=user_schema.AuthResponse)
+def refresh_access_token(
+    request: Request,
+    response: Response,
+    db: Session = Depends(get_db),
+):
+    validate_request_origin(request)
+    refresh_token = request.cookies.get(REFRESH_COOKIE_NAME)
+    if not refresh_token:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="ログインが必要です")
+    try:
+        new_token, refresh_session = auth_crud.rotate_refresh_session(
+            db, refresh_token, REFRESH_TOKEN_DAYS
+        )
+    except auth_crud.InvalidRefreshTokenError:
+        return invalid_session_response("ログインの有効期限が切れています")
+    user = user_crud.get_user(db, refresh_session.user_id)
+    if user is None:
+        return invalid_session_response("ログインが必要です")
+    set_refresh_cookie(response, new_token)
+    return auth_response(user)
+
+
+@router.post("/auth/logout", status_code=204)
+def logout(
+    request: Request,
+    response: Response,
+    db: Session = Depends(get_db),
+):
+    validate_request_origin(request)
+    refresh_token = request.cookies.get(REFRESH_COOKIE_NAME)
+    if refresh_token:
+        auth_crud.revoke_refresh_token(db, refresh_token)
+    clear_refresh_cookie(response)
+    response.status_code = 204
+    return response
 
 
 @router.get("/users/{user_id}", response_model=user_schema.UserSearchResponse)

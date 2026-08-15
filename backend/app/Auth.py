@@ -14,7 +14,7 @@ from app.models.user_model import User
 
 SECRET_KEY = os.getenv("SECRET_KEY")
 ALGORITHM = os.getenv("ALGORITHM", "HS256")
-ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", 30))
+ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", 60))
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
 
 
@@ -22,6 +22,7 @@ def create_access_token(data: dict) -> str:
     if not SECRET_KEY:
         raise RuntimeError("環境変数 SECRET_KEY が設定されていません")
     payload = data.copy()
+    payload["type"] = "access"
     payload["exp"] = datetime.now(timezone.utc) + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     return jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
 
@@ -36,6 +37,8 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
         if not SECRET_KEY:
             raise error
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        if payload.get("type") != "access":
+            raise error
         user_pk = int(payload.get("sub"))
     except (InvalidTokenError, TypeError, ValueError):
         raise error

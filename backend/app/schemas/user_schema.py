@@ -42,6 +42,12 @@ class UserResponse(BaseModel):
     username: str
 
 
+class AuthResponse(BaseModel):
+    access_token: str
+    token_type: str = "bearer"
+    user: UserResponse
+
+
 class UserSearchResponse(UserResponse):
     follow_status: str
 

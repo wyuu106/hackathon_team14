@@ -10,6 +10,7 @@ from .chat_schema import (
 )
 from .user_schema import (
     AccountResponse,
+    AuthResponse,
     FriendRequestResponse,
     FriendResponse,
     UserCreate,
