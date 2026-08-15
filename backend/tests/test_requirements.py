@@ -3,6 +3,7 @@ from datetime import timedelta
 from pydantic import ValidationError
 
 from app import cruds, schemas
+from app.cruds import chat_crud
 
 
 def user_payload(user_id: str, name: str) -> schemas.UserCreate:
@@ -35,7 +36,7 @@ def test_friend_request_requires_acceptance(db):
 def test_only_friends_can_read_and_readers_are_recorded(db):
     alice = cruds.create_user(db, user_payload("alice01", "Alice"))
     bob = cruds.create_user(db, user_payload("bob0001", "Bob"))
-    post = cruds.create_post(db, schemas.PostCreate(content="おはよう"), alice.id)
+    chat = cruds.create_chat(db, schemas.ChatCreate(content="おはよう"), alice.id)
 
     with pytest.raises(PermissionError):
         cruds.message_history(db, bob, alice)
@@ -45,18 +46,18 @@ def test_only_friends_can_read_and_readers_are_recorded(db):
     # 友だち成立前の投稿は見えない。
     assert cruds.message_history(db, bob, alice) == []
 
-    post = cruds.create_post(db, schemas.PostCreate(content="友だちになった後"), alice.id)
-    assert cruds.message_history(db, bob, alice) == [post]
+    chat = cruds.create_chat(db, schemas.ChatCreate(content="友だちになった後"), alice.id)
+    assert cruds.message_history(db, bob, alice) == [chat]
 
-    viewers = cruds.message_viewers(db, post.id, alice.id)
+    viewers = cruds.message_viewers(db, chat.id, alice.id)
     assert [(viewer["user_id"], viewer["username"]) for viewer in viewers] == [("bob0001", "Bob")]
 
 
 def test_message_history_is_limited_to_the_last_week(db):
     alice = cruds.create_user(db, user_payload("alice01", "Alice"))
-    recent = cruds.create_post(db, schemas.PostCreate(content="最近"), alice.id)
-    old = cruds.create_post(db, schemas.PostCreate(content="8日前"), alice.id)
-    old.created_at = cruds.utc_now() - timedelta(days=8)
+    recent = cruds.create_chat(db, schemas.ChatCreate(content="最近"), alice.id)
+    old = cruds.create_chat(db, schemas.ChatCreate(content="8日前"), alice.id)
+    old.created_at = chat_crud.utc_now() - timedelta(days=8)
     db.commit()
 
     assert cruds.message_history(db, alice, alice) == [recent]
@@ -67,8 +68,8 @@ def test_inbox_starts_with_own_history_then_unread_friend(db):
     bob = cruds.create_user(db, user_payload("bob0001", "Bob"))
     request = cruds.create_friend_request(db, alice.id, bob.id)
     cruds.accept_friend_request(db, request, bob.id)
-    cruds.create_post(db, schemas.PostCreate(content="自分の投稿"), alice.id)
-    cruds.create_post(db, schemas.PostCreate(content="新着です"), bob.id)
+    cruds.create_chat(db, schemas.ChatCreate(content="自分のチャット"), alice.id)
+    cruds.create_chat(db, schemas.ChatCreate(content="新着です"), bob.id)
 
     rows = cruds.inbox(db, alice)
     assert rows[0]["user_id"] == "alice01"

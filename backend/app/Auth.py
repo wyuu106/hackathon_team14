@@ -7,9 +7,9 @@ from fastapi.security import OAuth2PasswordBearer
 from jwt.exceptions import InvalidTokenError
 from sqlalchemy.orm import Session
 
-from app import models
-from app.cruds import get_user
+from app.cruds.user_crud import get_user
 from app.db import get_db
+from app.models.user_model import User
 
 
 SECRET_KEY = os.getenv("SECRET_KEY")
@@ -26,7 +26,7 @@ def create_access_token(data: dict) -> str:
     return jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
 
 
-def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)) -> models.User:
+def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)) -> User:
     error = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="認証情報が無効です",

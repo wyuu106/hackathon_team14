@@ -4,7 +4,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.db import Base, apply_schema_updates, engine
 from app import models
-from app.routers import account, auth, messages, social
+from app.routers import chat_router, user_router
 
 
 Base.metadata.create_all(bind=engine)
@@ -28,7 +28,5 @@ def root():
     return {"message": "Hello Hackathon"}
 
 
-app.include_router(auth.router)
-app.include_router(messages.router)
-app.include_router(social.router)
-app.include_router(account.router)
+app.include_router(user_router.router)
+app.include_router(chat_router.router)
