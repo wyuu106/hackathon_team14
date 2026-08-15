@@ -47,7 +47,19 @@ function Account() {
   return (
     <div className="account-page">
       <header className="account-header">
-        <div className="account-title-row"><div><h1>アカウント</h1>{account && <p>@{account.user_id} · {account.username}</p>}</div><Link className="settings-link" to="/setting" aria-label="設定">⚙</Link></div>
+        <div className="account-title-row">
+          <div>
+            {account && (
+              <>
+                <h1 className="account-user-id">{account.user_id}</h1>
+                <p className="account-user-name">{account.username}</p>
+              </>
+            )}
+          </div>
+          <Link className="settings-link" to="/setting" aria-label="設定">
+            ⚙
+          </Link>
+        </div>
         <div className="account-menu">
           <Link className="account-request-link" to="/account/requests">
             <span>フォローリクエスト</span>

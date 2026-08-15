@@ -2,7 +2,8 @@
 .account-header { padding: 22px; background: linear-gradient(135deg, #fff, #fff0f5); border: 1px solid var(--border); border-radius: 22px; box-shadow: var(--shadow); }
 .account-title-row { display: flex; justify-content: space-between; align-items: center; }
 .account-header h1, .sub-header h1 { margin: 0; font-size: 24px; }
-.account-header p { color: var(--text); }
+.account-user-id { font-weight: 700; }
+.account-user-name { margin: 6px 0 0; color: var(--text); }
 .settings-link { color: var(--accent); font-size: 28px; text-decoration: none; }
 .account-menu { margin-top: 20px; padding-top: 18px; border-top: 1px solid var(--border); }
 .account-request-link { display: flex; align-items: center; justify-content: space-between; padding: 15px; border-radius: 14px; background: rgba(255,255,255,.72); color: var(--accent-dark); font-weight: 700; text-decoration: none; }
@@ -18,8 +19,11 @@
 .empty-state { padding: 30px 18px; color: #777; text-align: center; }
 .sub-header { display: flex; align-items: center; justify-content: center; position: relative; padding: 18px; margin-bottom: 20px; background: #fff; border: 1px solid var(--border); border-radius: 18px; }
 .sub-header button { position: absolute; left: 18px; border: 0; background: none; color: var(--accent-dark); cursor: pointer; }
-.logout-button { width: 100%; margin-top: 24px; padding: 16px; border: 0; border-radius: 12px; background: #fff; color: #c62828; font-size: 16px; font-weight: 700; cursor: pointer; }
+.sub-header.settings-header { padding: 4px 0; background: transparent; border: 0; border-radius: 0; }
+.settings-header h1 { font-size: 28px; font-weight: 700; }
+.settings-header button { left: 0; }
 .settings-menu-item { display: flex; align-items: center; justify-content: space-between; min-height: 56px; padding: 0 18px; border: 1px solid var(--border); border-radius: 14px; background: #fff; box-shadow: var(--shadow); color: var(--text-h); text-decoration: none; }
 .settings-menu-item:hover { background: var(--surface-soft); }
 .settings-menu-item strong { display: block; font-size: 16px; }
 .settings-menu-item b { color: var(--accent); font-size: 24px; }
+.logout-button { position: static; width: 100%; margin-top: 12px; color: #c62828; font-family: inherit; text-align: left; cursor: pointer; }

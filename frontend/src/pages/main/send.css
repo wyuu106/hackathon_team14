@@ -1,5 +1,5 @@
 .send-page { text-align: left; }
-.page-heading { margin-bottom: 26px; }
+.page-heading { margin-bottom: 26px; text-align: center; }
 .page-heading h1 { margin: 5px 0 8px; font-weight: 800; }
 .page-heading p { color: var(--text); font-size: 14px; }
 .page-kicker { color: var(--accent); font-size: 11px; font-weight: 800; letter-spacing: 1.8px; }

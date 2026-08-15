@@ -9,7 +9,7 @@ function Settings() {
     navigate("/login", { replace: true });
   };
   return <div className="account-page">
-    <header className="sub-header">
+    <header className="sub-header settings-header">
       <button onClick={() => navigate("/account")}>
         戻る
       </button>
@@ -22,7 +22,9 @@ function Settings() {
       </span>
       <b>›</b>
     </Link>
-    <button className="logout-button" onClick={logout}>ログアウト</button>
+    <button className="settings-menu-item logout-button" onClick={logout}>
+      <strong>ログアウト</strong>
+    </button>
   </div>;
 }
 
