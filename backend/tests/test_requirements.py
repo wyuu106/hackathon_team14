@@ -4,6 +4,7 @@ from fastapi.testclient import TestClient
 from pydantic import ValidationError
 
 from app import cruds, schemas
+from app.Auth import create_access_token
 from app.db import get_db
 from app.main import app
 from app.models import RefreshSession
@@ -133,5 +134,40 @@ def test_login_refresh_and_logout_cookie_flow(db):
             logout_response = client.post("/auth/logout")
             assert logout_response.status_code == 204
             assert client.post("/auth/refresh").status_code == 401
+    finally:
+        app.dependency_overrides.clear()
+
+
+def test_friend_receives_new_message_over_websocket(db):
+    alice = cruds.create_user(db, user_payload("alice01", "Alice"))
+    bob = cruds.create_user(db, user_payload("bob0001", "Bob"))
+    request = cruds.create_friend_request(db, alice.id, bob.id)
+    cruds.accept_friend_request(db, request, bob.id)
+
+    def override_db():
+        yield db
+
+    app.dependency_overrides[get_db] = override_db
+    try:
+        with TestClient(app) as client:
+            with client.websocket_connect("/ws") as websocket:
+                websocket.send_json({
+                    "type": "authenticate",
+                    "token": create_access_token({"sub": str(bob.id)}),
+                })
+                assert websocket.receive_json() == {"type": "authenticated"}
+
+                response = client.post(
+                    "/messages",
+                    json={"content": "リアルタイムメッセージ"},
+                    headers={
+                        "Authorization": f"Bearer {create_access_token({'sub': str(alice.id)})}"
+                    },
+                )
+                assert response.status_code == 201
+                event = websocket.receive_json()
+                assert event["type"] == "message.created"
+                assert event["message"]["content"] == "リアルタイムメッセージ"
+                assert event["message"]["author"]["user_id"] == "alice01"
     finally:
         app.dependency_overrides.clear()

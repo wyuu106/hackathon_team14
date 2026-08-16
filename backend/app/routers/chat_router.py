@@ -1,18 +1,78 @@
-from fastapi import APIRouter, Depends, HTTPException, Response
+import asyncio
+import os
+
+from fastapi import APIRouter, Depends, HTTPException, Response, WebSocket, WebSocketDisconnect
 from sqlalchemy.orm import Session
 
-from app.Auth import get_current_user
+from app.Auth import decode_access_token, get_current_user
 from app.cruds import chat_crud, user_crud
 from app.db import get_db
 from app.models import user_model
 from app.schemas import chat_schema, user_schema
+from app.websocket_manager import websocket_manager
 
 router = APIRouter(tags=["chats"])
+ALLOWED_ORIGINS = {
+    origin.strip()
+    for origin in os.getenv("ALLOW_ORIGINS", "").split(",")
+    if origin.strip()
+}
+
+
+@router.websocket("/ws")
+async def websocket_updates(websocket: WebSocket, db: Session = Depends(get_db)):
+    origin = websocket.headers.get("origin")
+    await websocket.accept()
+    if origin and origin not in ALLOWED_ORIGINS:
+        await websocket.close(code=1008, reason="許可されていない接続です")
+        return
+
+    user_id = None
+    try:
+        auth_message = await asyncio.wait_for(websocket.receive_json(), timeout=10)
+        if auth_message.get("type") != "authenticate":
+            await websocket.close(code=1008, reason="認証が必要です")
+            return
+        try:
+            user_id = decode_access_token(auth_message.get("token", ""))
+        except HTTPException:
+            await websocket.close(code=1008, reason="認証情報が無効です")
+            return
+        if user_crud.get_user(db, user_id) is None:
+            await websocket.close(code=1008, reason="ユーザーが見つかりません")
+            return
+
+        websocket_manager.connect(user_id, websocket)
+        await websocket.send_json({"type": "authenticated"})
+
+        while True:
+            message = await websocket.receive_json()
+            if message.get("type") == "ping":
+                await websocket.send_json({"type": "pong"})
+    except (TimeoutError, WebSocketDisconnect):
+        pass
+    finally:
+        if user_id is not None:
+            websocket_manager.disconnect(user_id, websocket)
 
 
 @router.post("/messages", response_model=chat_schema.ChatResponse, status_code=201)
-def create_message(payload: chat_schema.ChatCreate, current: user_model.User = Depends(get_current_user), db: Session = Depends(get_db)):
-    return chat_crud.create_chat(db, payload, current.id)
+async def create_message(payload: chat_schema.ChatCreate, current: user_model.User = Depends(get_current_user), db: Session = Depends(get_db)):
+    chat = chat_crud.create_chat(db, payload, current.id)
+    recipient_ids = {current.id, *(friend.id for friend in user_crud.list_friends(db, current.id))}
+    await websocket_manager.send_to_users(recipient_ids, {
+        "type": "message.created",
+        "message": {
+            "message_id": chat.id,
+            "content": chat.content,
+            "created_at": chat.created_at.isoformat(),
+            "author": {
+                "user_id": current.user_id,
+                "username": current.username,
+            },
+        },
+    })
+    return chat
 
 
 @router.get("/messages/timeline", response_model=list[chat_schema.ChatResponse])

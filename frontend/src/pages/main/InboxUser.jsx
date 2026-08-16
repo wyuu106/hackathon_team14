@@ -1,35 +1,44 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { api } from "../../utils/api";
 import { getErrorMessage } from "../../utils/error";
 import { formatJapanDateTime } from "../../utils/date";
+import { useRealtime } from "../../contexts/realtime-context";
 
 import "./inboxUser.css";
 
 function InboxUser() {
   const navigate = useNavigate();
   const { userId } = useParams();
+  const { lastEvent } = useRealtime();
 
   const [messageData, setMessageData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [viewers, setViewers] = useState(null);
 
-  useEffect(() => {
-    const fetchMessageData = async () => {
-      try {
-        const response = await api.get(`/messages/${userId}`);
+  const fetchMessageData = useCallback(async () => {
+    try {
+      const response = await api.get(`/messages/${userId}`);
 
-        setMessageData(response.data);
-      } catch (error) {
-        console.error(error);
-        alert(getErrorMessage(error));
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchMessageData();
+      setMessageData(response.data);
+    } catch (error) {
+      console.error(error);
+      alert(getErrorMessage(error));
+    } finally {
+      setIsLoading(false);
+    }
   }, [userId]);
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => void fetchMessageData(), 0);
+    return () => window.clearTimeout(timer);
+  }, [fetchMessageData]);
+
+  useEffect(() => {
+    if (lastEvent?.message?.author?.user_id !== userId) return undefined;
+    const timer = window.setTimeout(() => void fetchMessageData(), 0);
+    return () => window.clearTimeout(timer);
+  }, [lastEvent, userId, fetchMessageData]);
 
   const showViewers = async (messageId) => {
     if (!messageData.is_own) return;
