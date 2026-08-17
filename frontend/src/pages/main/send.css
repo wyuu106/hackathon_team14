@@ -58,7 +58,7 @@
   .send-page {
     display: flex;
     flex-direction: column;
-    height: calc(100svh - 194px - env(safe-area-inset-bottom, 0px));
+    height: calc(100svh - 198px - env(safe-area-inset-bottom, 0px));
     min-height: 280px;
     overflow: hidden;
   }
@@ -87,7 +87,7 @@
     position: fixed;
     left: 14px;
     right: 14px;
-    bottom: calc(92px + env(safe-area-inset-bottom, 0px));
+    bottom: calc(96px + env(safe-area-inset-bottom, 0px));
     z-index: 9;
     margin: 0 auto;
     max-width: 652px;

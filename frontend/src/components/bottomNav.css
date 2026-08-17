@@ -51,7 +51,7 @@
 
 @media (max-width: 480px) {
   .bottom-nav {
-    bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+    bottom: calc(16px + env(safe-area-inset-bottom, 0px));
     border-radius: 22px;
   }
 }

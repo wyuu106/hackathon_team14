@@ -16,6 +16,6 @@
 
 @media (max-width: 480px) {
   .app-content {
-    padding: 20px 14px calc(108px + env(safe-area-inset-bottom, 0px));
+    padding: 20px 14px calc(112px + env(safe-area-inset-bottom, 0px));
   }
 }
