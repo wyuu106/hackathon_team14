@@ -78,8 +78,7 @@ function Send() {
       </div>
 
       <form className="free-message-form" onSubmit={handleSubmit}>
-        <label htmlFor="free-message">自由入力</label>
-        <div><input id="free-message" value={freeMessage} onChange={(event) => setFreeMessage(event.target.value)} maxLength={1000} placeholder="メッセージを入力" />
+        <div><input id="free-message" aria-label="メッセージ" value={freeMessage} onChange={(event) => setFreeMessage(event.target.value)} maxLength={1000} placeholder="メッセージを入力" />
         <button type="submit" disabled={!freeMessage.trim() || sendingId !== null}>送信</button></div>
       </form>
     </div>

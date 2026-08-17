@@ -48,3 +48,10 @@
   stroke-width: 2.2;
   transform: translateY(-1px);
 }
+
+@media (max-width: 480px) {
+  .bottom-nav {
+    bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+    border-radius: 22px;
+  }
+}
