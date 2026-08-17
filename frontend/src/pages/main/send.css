@@ -6,12 +6,13 @@
 .template-list {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 14px;
 }
 
 .template-card {
   width: 100%;
-  padding: 17px 18px;
+  min-height: 72px;
+  padding: 22px 20px;
   text-align: left;
 
   background: #fff;
@@ -20,7 +21,9 @@
   color: var(--text-h);
   box-shadow: 0 5px 18px rgba(150, 55, 91, .05);
 
-  font-size: 16px;
+  font-size: 18px;
+  line-height: 1.5;
+  font-weight: 600;
   cursor: pointer;
 
   transition: 0.2s;
@@ -46,8 +49,58 @@
 }
 .template-empty { padding: 26px 18px; border: 1px dashed #e8adc2; border-radius: 16px; background: rgba(255,255,255,.65); color: var(--text); text-align: center; }
 .free-message-form { margin-top: 24px; padding: 20px; border: 1px solid var(--border); border-radius: 20px; background: #fff; box-shadow: var(--shadow); text-align: left; }
-.free-message-form label { display: block; margin-bottom: 10px; font-weight: 700; color: var(--text-h); }
 .free-message-form div { display: flex; gap: 8px; }
 .free-message-form input { flex: 1; min-width: 0; padding: 13px 16px; border: 1px solid var(--border); border-radius: 999px; background: #fffafd; color: var(--text-h); }
 .free-message-form button { padding: 11px 20px; border: 0; border-radius: 999px; background: var(--accent); color: #fff; font-weight: 700; cursor: pointer; }
 .free-message-form button:disabled { opacity: .5; }
+
+@media (max-width: 480px) {
+  .send-page {
+    display: flex;
+    flex-direction: column;
+    height: calc(100svh - 194px - env(safe-area-inset-bottom, 0px));
+    min-height: 280px;
+    overflow: hidden;
+  }
+
+  .page-heading {
+    flex: 0 0 auto;
+    margin-bottom: 18px;
+  }
+
+  .template-list {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: 2px 2px 14px;
+    scrollbar-width: thin;
+  }
+
+  .template-card {
+    min-height: 78px;
+    padding: 24px 20px;
+    font-size: 19px;
+  }
+
+  .free-message-form {
+    position: fixed;
+    left: 14px;
+    right: 14px;
+    bottom: calc(92px + env(safe-area-inset-bottom, 0px));
+    z-index: 9;
+    margin: 0 auto;
+    max-width: 652px;
+    padding: 10px;
+    border-radius: 18px;
+    box-sizing: border-box;
+  }
+
+  .free-message-form input {
+    padding: 12px 15px;
+  }
+
+  .free-message-form button {
+    padding: 11px 18px;
+  }
+}
